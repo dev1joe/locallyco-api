@@ -1,0 +1,7 @@
+# files
+.env
+
+# directories
+node_modules
+dist
+build
