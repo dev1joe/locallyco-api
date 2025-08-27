@@ -1,8 +1,9 @@
 import mysql from "mysql2/promise";
 import { drizzle, MySql2Database } from "drizzle-orm/mysql2";
+import config from "../config/config.ts";
 import schema from "./schema.ts";
 
-export default async function connectToDatabase(credentials: Object): Promise<MySql2Database<Record<string, never>> | null> {
+async function connectToDatabase(credentials: Object): Promise<MySql2Database<Record<string, never>> | null> {
     try {
         const connection = await mysql.createConnection(credentials);
         console.log("Database connection established, returning drizzle instance..."); 
@@ -15,5 +16,5 @@ export default async function connectToDatabase(credentials: Object): Promise<My
     }
 }
 
-// const db = await connectToDatabase(config.db);
-// export default db;
+const db = await connectToDatabase(config.db);
+export default db;
