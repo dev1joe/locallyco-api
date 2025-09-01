@@ -18,20 +18,23 @@
   },
   "dependencies": {
     "dotenv": "^17.2.1",
-    "drizzle-orm": "^0.44.4",
+    "drizzle-orm": "^0.44.5",
     "express": "^4.21.2",
     "express-validator": "^7.2.1",
-    "mysql2": "^3.14.3"
+    "mysql2": "^3.14.3",
+    "pg": "^8.16.3"
   },
   "devDependencies": {
     "@faker-js/faker": "^10.0.0",
     "@tsconfig/node24": "^24.0.1",
     "@types/express": "^5.0.3",
     "@types/node": "^24.3.0",
+    "@types/pg": "^8.15.5",
     "drizzle-kit": "^0.31.4",
     "drizzle-seed": "^0.3.1",
     "nodemon": "^3.1.10",
     "ts-node": "^10.9.2",
+    "tsx": "^4.20.5",
     "typescript": "^5.9.2"
   }
 }
