@@ -7,7 +7,10 @@ import { Pool } from "pg"
 function connectToDatabase(credentials: Object): NodePgDatabase<typeof schema> | null {
 	try {
 		const pool = new Pool(credentials);
-		return drizzle(pool, { schema });
+		return drizzle(pool, {
+			schema: schema,
+			casing: "snake_case",
+		});
 	} catch (error) {
 		console.error("Failed to init db with errors:", error);
 		return null

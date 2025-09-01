@@ -1,19 +1,12 @@
 {
   "version": "7",
-  "dialect": "mysql",
+  "dialect": "postgresql",
   "entries": [
     {
       "idx": 0,
-      "version": "5",
-      "when": 1756146682490,
-      "tag": "20250825183122_natural_talon",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1756231259884,
-      "tag": "20250826180059_many_expediter",
+      "version": "7",
+      "when": 1756754823480,
+      "tag": "20250901192703_right_living_tribunal",
       "breakpoints": true
     }
   ]

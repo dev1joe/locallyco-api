@@ -1,5 +1,8 @@
 # files
 .env
+notes_to_self.txt
+test.js
+test.ts
 
 # directories
 node_modules
