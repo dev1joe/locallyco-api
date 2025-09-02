@@ -1,5 +1,5 @@
 import db from "../../db/db.ts";
-import products from "../../db/models/product.model.ts";
+import products from "../../db/models/product.ts";
 import { eq } from "drizzle-orm";
 
 // TODO: return Product object

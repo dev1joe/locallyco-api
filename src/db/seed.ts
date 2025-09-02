@@ -12,7 +12,7 @@
 
 import "dotenv/config.js"; // Load environment variables from .env file
 import config from '../../config/config.ts'; // Adjust the path to your config file
-import connectToDB from './db.ts'; // Adjust the path to your database connection file
+import db from './db.ts'; // Adjust the path to your database connection file
 import { faker } from '@faker-js/faker';
 
 // import entities
@@ -96,16 +96,6 @@ async function seed(database: NodePgDatabase<typeof schema>, reset: boolean = tr
 		console.error('❌ Database seeding failed:', error);
 		process.exit(1); // Exit with an error code
 	}
-}
-
-
-// Connect to the database
-console.log(config.db);
-const db = await connectToDB(config.db);
-
-if (!db) {
-	console.error("Failed to connect to the database. Seeding aborted.");
-	process.exit(1);
 }
 
 // Execute the seeding function

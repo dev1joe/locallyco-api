@@ -4,23 +4,21 @@ import { drizzle, NodePgDatabase } from "drizzle-orm/node-postgres"
 import { Pool } from "pg"
 
 //TODO: Handle db init failure gracefully
-function connectToDatabase(credentials: Object): NodePgDatabase<typeof schema> | null {
-	try {
-		const pool = new Pool(credentials);
-		return drizzle(pool, {
-			schema: schema,
-			casing: "snake_case",
-		});
-	} catch (error) {
-		console.error("Failed to init db with errors:", error);
-		return null
-	}
+function connectToDatabase(credentials: Object): NodePgDatabase<typeof schema> {
+	const pool = new Pool(credentials);
+	return drizzle(pool, {
+		schema: schema,
+		casing: "snake_case",
+	});
 }
 
-const db = connectToDatabase(config.db);
+let db: NodePgDatabase<typeof schema>;
 
-// If db didn't init successfully
-if (db === null) {
+try {
+	db = connectToDatabase(config.db);
+} catch (error) {
+	console.error("Failed to init db with errors:", error);
 	process.exit(1);
 }
+
 export default db;

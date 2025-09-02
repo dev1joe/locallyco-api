@@ -5,20 +5,10 @@
 
 import "dotenv/config.js"; // Load environment variables from .env file
 import config from '../config/config.ts'; // Adjust the path to your config file
-import connectToDB from '../db/db.ts'; // Adjust the path to your database connection file
+import db from './db/db.ts'; // Adjust the path to your database connection file
 
 // import entities
-import categories from '../db/models/category.model.ts';
-
-// Connect to the database
-//console.log(config.db);
-const db = await connectToDB(config.db);
-
-if(! db) {
-    console.error("Failed to connect to the database. Seeding aborted.");
-    process.exit(1);
-}
-
+import categories from './db/models/category.ts';
 
 const res = await db.select({ id: categories.id }).from(categories)
 const categoriesIds = res.map(c => c.id);

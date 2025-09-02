@@ -1,7 +1,7 @@
-import { AnyPgColumn, foreignKey, pgTable } from "drizzle-orm/pg-core";
+import { foreignKey, pgTable } from "drizzle-orm/pg-core";
 import { integer, varchar, jsonb } from "drizzle-orm/pg-core";
 import timestamps from "../common/columns/timestamps.ts";
-
+import type { AnyPgColumn } from "drizzle-orm/pg-core";
 //NOTE: see which is better .references or function foreignKey
 
 const category = pgTable(
