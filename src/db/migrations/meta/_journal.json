@@ -8,6 +8,13 @@
       "when": 1756754823480,
       "tag": "20250901192703_right_living_tribunal",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1756773365708,
+      "tag": "20250902003605_modern_bruce_banner",
+      "breakpoints": true
     }
   ]
 }

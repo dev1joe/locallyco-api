@@ -1,17 +1,17 @@
 import { pgTable as table } from "drizzle-orm/pg-core";
 import { integer, varchar } from "drizzle-orm/pg-core";
-import categories from "./category.ts";
+
+import category from "./category.ts";
 import brands from "./brand.ts";
 import timestamps from "../common/columns/timestamps.ts";
-
 
 const products = table(
 	"products", {
 	id: integer().primaryKey().generatedAlwaysAsIdentity(),
-	name: varchar({ length: 256 }),
-	desc: varchar({ length: 1000 }),
-	category_id: integer().references(() => categories.id, { onDelete: "cascade" }), // TODO: what to do on update ??
+	category_id: integer().references(() => category.id, { onDelete: "cascade" }), // TODO: what to do on update ??
 	brand_id: integer().references(() => brands.id, { onDelete: "cascade" }),
+	name: varchar({ length: 256 }),
+	description: varchar({ length: 1000 }),
 	...timestamps
 }
 );

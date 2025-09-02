@@ -3,18 +3,16 @@ import { integer, varchar } from "drizzle-orm/pg-core";
 import timestamps from "../common/columns/timestamps.ts";
 
 import address from "./address.ts";
-import category from "./category.ts";
 
-const brands = pgTable(
-	"brands",
+const customer = pgTable(
+	"customer",
 	{
 		id: integer().primaryKey().generatedAlwaysAsIdentity(),
-		category_id: integer().references(() => category.id),
-		address: integer().references(() => address.id),
-		name: varchar({ length: 256 }),
-		description: varchar({ length: 1000 }),
+		address_id: integer().references(() => address.id),
+		fname: varchar({ length: 256 }),
+		lname: varchar({ length: 256 }),
 		...timestamps
 	},
 );
 
-export default brands;
+export default customer;
