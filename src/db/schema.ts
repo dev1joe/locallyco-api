@@ -14,6 +14,7 @@ import address from './models/address.ts';
 import product_sku from './models/product_sku.ts';
 import product_image from './models/product_image.ts';
 import review from './models/review.ts';
+import { account, session, user, verification } from './models/auth-schema.ts';
 
 const schema = {
 	products,
@@ -32,6 +33,10 @@ const schema = {
 	product_sku,
 	product_image,
 	review,
+	user,
+	session,
+	account,
+	verification,
 }
 
 export default schema;

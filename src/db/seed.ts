@@ -10,8 +10,7 @@
  * `ts-node seed.ts`
  */
 
-import "dotenv/config.js"; // Load environment variables from .env file
-import config from '../../config/config.ts'; // Adjust the path to your config file
+import { config } from '../../config/config.ts'; // Adjust the path to your config file
 import db from './db.ts'; // Adjust the path to your database connection file
 import { faker } from '@faker-js/faker';
 
