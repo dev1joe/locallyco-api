@@ -10,23 +10,23 @@ export const auth = betterAuth({
 	}),
 	telemetry: { enabled: false },
 
-	plugins: [
-		openAPI(),
-	],
+	// plugins: [
+	// 	openAPI(),
+	// ],
 
 	// trustedOrigins: [
-	// 	"http://192.168.1.113:3000",//config.frontEndURL,
+	// 	config.frontEndURL,
 	// ],
 
 	emailAndPassword: {
 		enabled: true,
 	},
 
-	// socialProviders: {
-	// 	google: {
-	// 		clientId: as string,
-	// 	},
-	// },
+	socialProviders: {
+		google: {
+			// prompt: 
+			clientId: config.googleClientId as string,
+			clientSecret: config.googleClientSecret as string,
+		},
+	},
 });
-
-// export default auth;

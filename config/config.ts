@@ -20,4 +20,6 @@ export const config = {
 	frontEndURL: process.env.FRONTEND_URL as string,
 
 	appPort: process.env.APP_PORT ? parseInt(process.env.APP_PORT) : 8888,
+	googleClientId: process.env.GOOGLE_CLIENT_ID as string,
+	googleClientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
 }
