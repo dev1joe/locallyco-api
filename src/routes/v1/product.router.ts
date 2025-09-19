@@ -3,6 +3,7 @@ import * as PC from "../../controllers/v1/product.controller.ts";
 import { checkSchema } from "express-validator";
 import createProductValidationSchema from "../../validators/v1/createProductValidationSchema.ts";
 
+//    /api/v1/products
 const productRouter = Router();
 
 // Read

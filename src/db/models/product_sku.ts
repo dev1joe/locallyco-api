@@ -4,7 +4,7 @@ import timestamps from "../common/columns/timestamps.ts";
 
 import product from "./product.ts"
 
-const product_sku = pgTable(
+const productSku = pgTable(
 	"product_sku",
 	{
 		id: integer().primaryKey().generatedAlwaysAsIdentity(),
@@ -17,4 +17,4 @@ const product_sku = pgTable(
 	},
 );
 
-export default product_sku;
+export default productSku;

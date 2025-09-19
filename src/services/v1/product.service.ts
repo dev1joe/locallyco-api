@@ -2,16 +2,14 @@ import db from "../../db/db.ts";
 import products from "../../db/models/product.ts";
 import { eq } from "drizzle-orm";
 
-// TODO: return Product object
 export async function getProducts(): Promise<Array<Object> | null> {
 	return await db?.select().from(products) || [];
 }
 
-// TODO: return Product object
 export async function getProductById(id: number): Promise<Object | null> {
-	return await db?.select().from(products).where(eq(products.id, id)).limit(1) || null;
+	const result = await db?.select().from(products).where(eq(products.id, id)).limit(1) || null;
+	return result[0] || null;
 }
-
 
 export async function createProduct(data: Object) {
 	return await db?.insert(products).values(data);

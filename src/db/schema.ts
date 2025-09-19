@@ -11,7 +11,7 @@ import cart from './models/cart.ts';
 import cart_item from './models/cart_item.ts'
 import category from './models/category.ts';
 import address from './models/address.ts';
-import product_sku from './models/product_sku.ts';
+import productSku from './models/product_sku.ts';
 import product_image from './models/product_image.ts';
 import review from './models/review.ts';
 
@@ -29,7 +29,7 @@ const schema = {
 	cart_item,
 	category,
 	address,
-	product_sku,
+	product_sku: productSku,
 	product_image,
 	review,
 }

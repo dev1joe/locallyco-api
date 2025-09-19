@@ -12,6 +12,7 @@ app.use(App.json());
 
 const v1 = Router();
 v1.use("/products", productRouter);
+// v1.use("/sku", skuRouter);
 
 app.use("/api/v1", v1);
 

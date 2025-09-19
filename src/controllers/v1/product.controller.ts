@@ -70,7 +70,7 @@ export async function updateProduct(req: E.Request, res: E.Response) {
 
     } catch (e) {
         console.log(e);
-        return res.status(500).json({ error: "Failed to create product" });
+        return res.status(500).json({ error: "Failed to update product" });
     }
 }
 
@@ -94,4 +94,4 @@ export async function deleteProduct(req: E.Request, res: E.Response) {
         console.log(e);
         return res.status(500).json({ error: "Failed to delete product" });
     }
-};
+}
