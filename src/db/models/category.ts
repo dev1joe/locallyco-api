@@ -9,7 +9,7 @@ const category = pgTable(
 	{
 		id: integer().primaryKey().generatedAlwaysAsIdentity(),
 		// parent_id: integer().references((): AnyPgColumn => category.id),
-		parent_id: integer(),
+		parentId: integer("parent_id"),
 		name: varchar({ length: 256 }),
 		description: varchar({ length: 1000 }),
 		attributes: jsonb(),
@@ -18,7 +18,7 @@ const category = pgTable(
 	(table) => [
 		foreignKey({
 			// name: "custom_fk"
-			columns: [table.parent_id],
+			columns: [table.parentId],
 			foreignColumns: [table.id],
 		})
 	],

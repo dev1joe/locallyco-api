@@ -4,14 +4,11 @@ import timestamps from "../common/columns/timestamps.ts";
 
 import productSku from "./product_sku.ts"
 
-const product_image = pgTable(
-	"product_image",
-	{
-		id: integer().primaryKey().generatedAlwaysAsIdentity(),
-		product_sku_id: integer().references(() => productSku.id),
-		image: varchar({ length: 256 }),
-		...timestamps
-	},
-);
+const productImage = pgTable("product_image", {
+	id: integer().primaryKey().generatedAlwaysAsIdentity(),
+	productSkuId: integer("product_sku_id").references(() => productSku.id),
+	image: varchar({ length: 256 }),
+	...timestamps
+});
 
-export default product_image;
+export default productImage;

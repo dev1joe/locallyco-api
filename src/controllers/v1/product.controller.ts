@@ -1,5 +1,6 @@
 import * as E from "express";
 import * as PS from "../../services/v1/product.service.ts";
+import * as SS from "../../services/v1/sku.service.ts";
 import { validationResult, matchedData } from "express-validator";
 
 export async function getProducts(req: E.Request, res: E.Response) {
@@ -34,6 +35,31 @@ export async function getProductById(req: E.Request, res: E.Response) {
     } catch (e) {
         console.log(e);
         return res.status(500).json({ error: "Failed to retrieve product" });
+    }
+}
+
+export async function getProductVersions(req: E.Request, res: E.Response) {
+    const id = parseInt(req.params.id, 10);
+    if (isNaN(id)) {
+        return res.status(400).json({ error: "Invalid product ID" });
+    }
+
+    try {
+        const product = await PS.getProductById(id);
+        if(! product) {
+            return res.status(404).json({ error: "Product not found"});
+        }
+
+        const versions = await SS.getSkuByProductId(id);
+
+        if (! versions) {
+            return res.status(404).json({error: "Product versions not found"});
+        }
+
+        return res.json({ result: versions });
+    } catch (e) {
+        console.log(e);
+        return res.status(500).json({ error: "Failed to retrieve product versions" });
     }
 }
 

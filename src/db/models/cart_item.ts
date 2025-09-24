@@ -5,15 +5,12 @@ import timestamps from "../common/columns/timestamps.ts";
 import cart from "./cart.ts"
 import product from "./product.ts"
 
-const order_item = pgTable(
-	"order_item",
-	{
-		id: integer().primaryKey().generatedAlwaysAsIdentity(),
-		cart_id: integer().references(() => cart.id),
-		product_id: integer().references(() => product.id),
-		quantity: integer(),
-		...timestamps
-	},
-);
+const cartItem = pgTable("order_item", {
+	id: integer().primaryKey().generatedAlwaysAsIdentity(),
+	cartId: integer("cart_id").references(() => cart.id),
+	productId: integer("product_id").references(() => product.id),
+	quantity: integer(),
+	...timestamps
+});
 
-export default order_item;
+export default cartItem;

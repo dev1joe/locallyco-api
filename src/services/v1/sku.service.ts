@@ -12,8 +12,12 @@ export async function getSkuById(id: number): Promise<Object | null> {
 }
 
 export async function getSkuByCode(code: string): Promise<Object | null> {
-    const result = await db?.select().from(sku).where(eq(sku.sku_code, code));
+    const result = await db?.select().from(sku).where(eq(sku.skuCode, code));
     return result[0] || null;
+}
+
+export async function getSkuByProductId(id: number): Promise<Array<Object>> {
+    return await db?.select().from(sku).where(eq(sku.productId, id));
 }
 
 export async function createSku(data: Object) {

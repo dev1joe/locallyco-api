@@ -4,16 +4,13 @@ import timestamps from "../common/columns/timestamps.ts";
 
 import order from "./order.ts"
 
-const shipment = pgTable(
-	"shipment",
-	{
-		id: integer().primaryKey().generatedAlwaysAsIdentity(),
-		order_id: integer().references(() => order.id),
-		stage: integer(),
-		estimated_time: integer(),
-		status: integer(),
-		...timestamps
-	},
-);
+const shipment = pgTable("shipment", {
+	id: integer().primaryKey().generatedAlwaysAsIdentity(),
+	orderId: integer("order_id").references(() => order.id),
+	stage: integer(),
+	estimatedTime: integer("estimated_time"),
+	status: integer(),
+	...timestamps
+});
 
 export default shipment;

@@ -1,0 +1,141 @@
+{
+    "attributes": 
+        {
+            "color": {
+                "type": "string",
+                "values": ["#ff0000", "#007fff", "#54ff00"]
+            },
+            "size": {
+                "type": "string",
+                "values": ["xs", "s", "m", "lg", "xl", "xxl"]
+            }
+        },
+    "versions": [
+        {
+            "color": "#ff0000",
+            "size": "xs",
+            "sku": "cts-red-xs",
+            "price_cents": 1000,
+            "image_url": "https://prd.place/400?id=5"
+        },
+        {
+            "color": "#ff0000",
+            "size": "s",
+            "sku": "cts-red-s",
+            "price_cents": 1000,
+            "image_url": "https://prd.place/400?id=5"
+        },
+        {
+            "color": "#ff0000",
+            "size": "m",
+            "sku": "cts-red-m",
+            "price_cents": 1000,
+            "image_url": "https://prd.place/400?id=5"
+        },
+        {
+            "color": "#ff0000",
+            "size": "lg",
+            "sku": "cts-red-lg",
+            "price_cents": 1000,
+            "image_url": "https://prd.place/400?id=5"
+        },
+        {
+            "color": "#ff0000",
+            "size": "xl",
+            "sku": "cts-red-xl",
+            "price_cents": 1000,
+            "image_url": "https://prd.place/400?id=5"
+        },
+        {
+            "color": "#ff0000",
+            "size": "xxl",
+            "sku": "cts-red-xxl",
+            "price_cents": 1000,
+            "image_url": "https://prd.place/400?id=5"
+        },
+                {
+            "color": "#007fff",
+            "size": "xs",
+            "sku": "cts-blue-xs",
+            "price_cents": 1000,
+            "image_url": "https://prd.place/400?id=5"
+        },
+        {
+            "color": "#007fff",
+            "size": "s",
+            "sku": "cts-blue-s",
+            "price_cents": 1000,
+            "image_url": "https://prd.place/400?id=5"
+        },
+        {
+            "color": "#007fff",
+            "size": "m",
+            "sku": "cts-blue-m",
+            "price_cents": 1000,
+            "image_url": "https://prd.place/400?id=5"
+        },
+        {
+            "color": "#007fff",
+            "size": "lg",
+            "sku": "cts-blue-lg",
+            "price_cents": 1000,
+            "image_url": "https://prd.place/400?id=5"
+        },
+        {
+            "color": "#007fff",
+            "size": "xl",
+            "sku": "cts-blue-xl",
+            "price_cents": 1000,
+            "image_url": "https://prd.place/400?id=5"
+        },
+        {
+            "color": "#007fff",
+            "size": "xxl",
+            "sku": "cts-blue-xxl",
+            "price_cents": 1000,
+            "image_url": "https://prd.place/400?id=5"
+        },
+                {
+            "color": "#54ff00",
+            "size": "xs",
+            "sku": "cts-green-xs",
+            "price_cents": 1000,
+            "image_url": "https://prd.place/400?id=5"
+        },
+        {
+            "color": "#54ff00",
+            "size": "s",
+            "sku": "cts-green-s",
+            "price_cents": 1000,
+            "image_url": "https://prd.place/400?id=5"
+        },
+        {
+            "color": "#54ff00",
+            "size": "m",
+            "sku": "cts-green-m",
+            "price_cents": 1000,
+            "image_url": "https://prd.place/400?id=5"
+        },
+        {
+            "color": "#54ff00",
+            "size": "lg",
+            "sku": "cts-green-lg",
+            "price_cents": 1000,
+            "image_url": "https://prd.place/400?id=5"
+        },
+        {
+            "color": "#54ff00",
+            "size": "xl",
+            "sku": "cts-green-xl",
+            "price_cents": 1000,
+            "image_url": "https://prd.place/400?id=5"
+        },
+        {
+            "color": "#54ff00",
+            "size": "xxl",
+            "sku": "cts-green-xxl",
+            "price_cents": 1000,
+            "image_url": "https://prd.place/400?id=5"
+        }
+    ]
+}

@@ -5,16 +5,13 @@ import timestamps from "../common/columns/timestamps.ts";
 import order from "./order.ts"
 import products from "./product.ts";
 
-const order_item = pgTable(
-	"order_item",
-	{
-		id: integer().primaryKey().generatedAlwaysAsIdentity(),
-		order_id: integer().references(() => order.id),
-		product_id: integer().references(() => products.id),
-		quantity: integer(),
-		item_price_cent: integer(),
-		...timestamps
-	},
-);
+const orderItem = pgTable("order_item", {
+	id: integer().primaryKey().generatedAlwaysAsIdentity(),
+	orderId: integer("order_id").references(() => order.id),
+	productId: integer("product_id").references(() => products.id),
+	quantity: integer(),
+	itemPriceCent: integer("item_price_cent"),
+	...timestamps
+});
 
-export default order_item;
+export default orderItem;

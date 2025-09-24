@@ -2,15 +2,12 @@ import { pgTable } from "drizzle-orm/pg-core";
 import { integer, varchar } from "drizzle-orm/pg-core";
 import timestamps from "../common/columns/timestamps.ts";
 
-import order_item from "./order_item.ts"
+import orderItem from "./order_item.ts"
 
-const return_item = pgTable(
-	"return_item",
-	{
-		order_item_id: integer().references(() => order_item.id).primaryKey(),
-		quantity: integer(),
-		...timestamps
-	},
-);
+const returnItem = pgTable("return_item", {
+	orderItemId: integer("order_item_id").references(() => orderItem.id).primaryKey(),
+	quantity: integer(),
+	...timestamps
+});
 
-export default return_item;
+export default returnItem;
