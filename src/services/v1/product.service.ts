@@ -1,15 +1,24 @@
 import db from "../../db/db.ts";
-import products from "../../db/models/product.ts";
+import { products } from "../../db/models/products.ts";
+import { categories } from "../../db/models/categories.ts";
+import { brands } from "../../db/models/brands.ts";
 import { eq } from "drizzle-orm";
 import type { createProductDTO } from "../../types/v1/product.ts";
 
-export async function getProducts(): Promise<Array<Object> | null> {
-	return await db?.select().from(products) || [];
+// TODO: pull in reviews data (all and single) including total rating, number of reviews, first 5 reviews, rating distribution
+// TODO: add product features varchar array column and pull it in (all and single)
+
+// TODO: handle filtering (all products)
+export async function getProducts(params = null): Promise<Array<Object> | null> {
+	return await db?.query.products.findMany({ with: { category: true, brand: true } }) || [];
 }
 
+// TODO: get some similar suggested products
 export async function getProductById(id: number): Promise<Object | null> {
-	const result = await db?.select().from(products).where(eq(products.id, id)).limit(1) || null;
-	return result[0] || null;
+	return await db?.query.products.findFirst({
+		where: eq(products.id, id),
+		with: { category: true, brand: true },
+	}) || [];
 }
 
 export async function createProduct(data: createProductDTO) {

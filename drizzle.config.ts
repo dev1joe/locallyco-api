@@ -6,7 +6,7 @@
  */
 
 import { defineConfig } from "drizzle-kit";
-import config from "./config/config.ts";
+import { config } from "./config/config.ts";
 
 export default defineConfig({
 	dialect: 'postgresql',

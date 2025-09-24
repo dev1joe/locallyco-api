@@ -13,8 +13,8 @@
 import db from './db.ts';
 import type { InferInsertModel } from 'drizzle-orm';
 
-import products from './models/product.ts';
-import brands from './models/brand.ts';
+import { products } from './models/products.ts';
+import { brands } from './models/brands.ts';
 import shipment from './models/shipment.ts';
 import order from './models/order.ts';
 import orderItem from './models/order_item.ts';
@@ -24,7 +24,7 @@ import promo from './models/promo.ts';
 import customer from './models/customer.ts';
 import cart from './models/cart.ts';
 import cartItem from './models/cart_item.ts';
-import category from './models/category.ts';
+import { categories } from './models/categories.ts';
 import address from './models/address.ts';
 import productSku from './models/product_sku.ts';
 import productImages from './models/product_image.ts';
@@ -33,7 +33,7 @@ import review from './models/review.ts';
 // --- Define your seed data here ---
 // This data is structured to respect the foreign key dependencies of your schema.
 type InsertAddress = InferInsertModel<typeof address>;
-type InsertCategory = InferInsertModel<typeof category>;
+type InsertCategory = InferInsertModel<typeof categories>;
 type InsertBrands = InferInsertModel<typeof brands>;
 type InsertCustomer = InferInsertModel<typeof customer>;
 type InsertPromo = InferInsertModel<typeof promo>;
@@ -206,7 +206,7 @@ async function seedDatabase() {
 			await tx.delete(customer);
 			await tx.delete(brands);
 			await tx.delete(promo);
-			await tx.delete(category);
+			await tx.delete(categories);
 			await tx.delete(address);
 
 			console.log('Existing data deleted.');
@@ -215,7 +215,7 @@ async function seedDatabase() {
 			// IMPORTANT: Insert in the correct order to satisfy foreign key constraints.
 			// E.g., addresses must exist before customers can reference them.
 			const addressesResult = await tx.insert(address).values(seedData.address).returning({ id: address.id });
-			const categoriesResult = await tx.insert(category).values(seedData.category).returning({ id: category.id });
+			const categoriesResult = await tx.insert(categories).values(seedData.category).returning({ id: categories.id });
 			const promosResult = await tx.insert(promo).values(seedData.promo).returning({ id: promo.id });
 
 			const seededCustomers = seedData.customer.map(c => ({ ...c, addressId: addressesResult[0].id }));

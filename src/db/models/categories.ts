@@ -1,10 +1,12 @@
-import { foreignKey, pgTable } from "drizzle-orm/pg-core";
-import { integer, varchar, jsonb } from "drizzle-orm/pg-core";
-import timestamps from "../common/columns/timestamps.ts";
-import type { AnyPgColumn } from "drizzle-orm/pg-core";
-//NOTE: see which is better .references or function foreignKey
+import { foreignKey, pgTable, integer, varchar, jsonb } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
 
-const category = pgTable(
+import { products } from "./products.ts";
+import timestamps from "../common/columns/timestamps.ts";
+
+//? NOTE: see which is better .references or function foreignKey
+// TODO: make the table name plural
+export const categories = pgTable(
 	"category",
 	{
 		id: integer().primaryKey().generatedAlwaysAsIdentity(),
@@ -24,4 +26,7 @@ const category = pgTable(
 	],
 );
 
-export default category;
+// Define the relations for the categories table
+export const categoriesRelations = relations(categories, ({ many }) => ({
+	products: many(products),
+}));

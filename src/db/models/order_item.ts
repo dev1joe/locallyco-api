@@ -3,7 +3,7 @@ import { integer, varchar } from "drizzle-orm/pg-core";
 import timestamps from "../common/columns/timestamps.ts";
 
 import order from "./order.ts"
-import products from "./product.ts";
+import { products } from "./products.ts";
 
 const orderItem = pgTable("order_item", {
 	id: integer().primaryKey().generatedAlwaysAsIdentity(),

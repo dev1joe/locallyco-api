@@ -8,7 +8,7 @@ import { config } from '../config/config.ts'; // Adjust the path to your config 
 import db from './db/db.ts'; // Adjust the path to your database connection file
 
 // import entities
-import categories from './db/models/category.ts';
+import categories from './db/models/categories.ts';
 
 const res = await db.select({ id: categories.id }).from(categories)
 const categoriesIds = res.map(c => c.id);

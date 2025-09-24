@@ -5,6 +5,7 @@ import { validationResult, matchedData } from "express-validator";
 
 export async function getProducts(req: E.Request, res: E.Response) {
     try {
+        const params = req.query;
         const products = await PS.getProducts();
 
         if (!products) {

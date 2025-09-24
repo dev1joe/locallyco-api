@@ -8,3 +8,6 @@
 
 ## TODOs
 ✅ changes variable names according to naming conventions in [this article](https://www.syncfusion.com/blogs/post/top-javascript-naming-convention), then make a migration
+
+[ ] 🔴 change models' file names to plural
+[ ] 🔴 change table names to plural and apply migrations

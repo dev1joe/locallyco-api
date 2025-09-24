@@ -1,5 +1,5 @@
 import { config } from "../../config/config.ts";
-import schema from "./schema.ts";
+import * as schema from "./schema.ts";
 import { drizzle, NodePgDatabase } from "drizzle-orm/node-postgres"
 import { Pool } from "pg"
 
