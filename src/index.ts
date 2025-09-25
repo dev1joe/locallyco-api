@@ -1,10 +1,11 @@
 import express from "express";
-import { config } from "../config/config.ts";
-import productRouter from "./routes/v1/product.router.ts";
+import { config } from "@config/config.ts";
+import productRouter from "@src/routes/v1/product.router";
 import Router from "express"
 import { toNodeHandler } from "better-auth/node"
-import { auth } from "./lib/auth.ts"
+import { auth } from "src/lib/auth"
 import cors from "cors";
+import { brandRouter } from "./controllers/v1/brand";
 
 // TODO: use cors, compression
 const app = express();
@@ -24,6 +25,7 @@ app.use(express.json());
 const v1 = Router();
 v1.use("/products", productRouter);
 // v1.use("/sku", skuRouter);
+v1.use("/brands", brandRouter);
 
 app.use("/api/v1", v1);
 
