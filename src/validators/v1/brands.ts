@@ -2,22 +2,22 @@ import { createSelectSchema, createInsertSchema, createUpdateSchema } from "driz
 import { z } from "zod"
 import xss from "xss";
 
-import brand from "src/db/models/brand.ts"
+import { brands } from "src/db/models/brands.ts"
 
 
-export const brandSelectSchema = createSelectSchema(brand, {
+export const brandSelectSchema = createSelectSchema(brands, {
 	name: (schema) => schema.transform((item) => xss(item)),
 	description: (schema) => schema.transform((item) => xss(item)),
 });
 export type BrandSelectSchema = z.infer<typeof brandSelectSchema>;
 
-export const brandInsertSchema = createInsertSchema(brand, {
+export const brandInsertSchema = createInsertSchema(brands, {
 	name: (schema) => schema.transform((item) => xss(item)),
 	description: (schema) => schema.transform((item) => xss(item)),
 });
 export type BrandInsertSchema = z.infer<typeof brandInsertSchema>;
 
-export const brandUpdateSchema = createUpdateSchema(brand, {
+export const brandUpdateSchema = createUpdateSchema(brands, {
 	name: (schema) => schema.transform((item) => xss(item)),
 	description: (schema) => schema.transform((item) => xss(item)),
 });

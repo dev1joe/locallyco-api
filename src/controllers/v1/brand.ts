@@ -6,7 +6,7 @@ import {
 	brandUpdateSchema,
 } from "@src/validators/v1/brands";
 import db from "@src/db/db";
-import brands from "@src/db/models/brand";
+import { brands } from "@src/db/models/brands";
 import { eq } from "drizzle-orm";
 import z from "zod";
 
