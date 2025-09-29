@@ -1,4 +1,5 @@
-import { foreignKey, pgTable, integer, varchar, jsonb } from "drizzle-orm/pg-core";
+import { pgTable } from "drizzle-orm/pg-core";
+import { foreignKey, integer, varchar, jsonb } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
 import { products } from "./products.ts";

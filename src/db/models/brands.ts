@@ -1,4 +1,5 @@
-import { pgTable, integer, varchar } from "drizzle-orm/pg-core";
+import { pgTable } from "drizzle-orm/pg-core";
+import { integer, varchar } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import timestamps from "../common/columns/timestamps.ts";
 

@@ -59,5 +59,5 @@ export * from './models/categories.ts';
 export * from './models/address.ts';
 export * from './models/product_sku.ts';
 export * from './models/product_image.ts';
-export * from './models/review.ts';
+export * from './models/reviews.ts';
 export * from './models/auth-schema.ts';

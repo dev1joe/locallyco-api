@@ -1,7 +1,5 @@
 import db from "../../db/db.ts";
 import { products } from "../../db/models/products.ts";
-import { categories } from "../../db/models/categories.ts";
-import { brands } from "../../db/models/brands.ts";
 import { eq } from "drizzle-orm";
 import type { createProductDTO } from "../../types/v1/product.ts";
 
@@ -9,15 +7,34 @@ import type { createProductDTO } from "../../types/v1/product.ts";
 // TODO: add product features varchar array column and pull it in (all and single)
 
 // TODO: handle filtering (all products)
-export async function getProducts(params = null): Promise<Array<Object> | null> {
-	return await db?.query.products.findMany({ with: { category: true, brand: true } }) || [];
+
+/**
+ * checks if any request parameter is mentioned and provides it
+ * sets a hard limit to the reviews count to 10
+ */
+export async function getProducts(params?: Record<string, any>): Promise<Array<Object> | null> {
+	let withOptions: Record<string, any> = {}
+
+	if (params) {
+		withOptions = applyQueryParams(params);
+	}
+
+	console.log("with options: ", withOptions);
+
+	return await db?.query.products.findMany({ with: withOptions }) || [];
 }
 
 // TODO: get some similar suggested products
-export async function getProductById(id: number): Promise<Object | null> {
+export async function getProductById(id: number, params?: Record<string, any>): Promise<Object | null> {
+	let withOptions: Record<string, any> = {}
+
+	if (params) {
+		withOptions = applyQueryParams(params);
+	}
+
 	return await db?.query.products.findFirst({
 		where: eq(products.id, id),
-		with: { category: true, brand: true },
+		with: withOptions,
 	}) || [];
 }
 
@@ -35,4 +52,38 @@ export async function updateProduct(id: number, data: createProductDTO) {
 
 export async function deleteProduct(id: number) {
 	return await db?.delete(products).where(eq(products.id, id));
+}
+
+function applyQueryParams(params: Record<string, any>): Record<string, any> {
+	const withOptions: Record<string, any> = {}
+
+	// [____ Category ____]
+	if ("category" in params) withOptions.category = true;
+
+	// [____ Reviews ____]
+	if ("brand" in params) withOptions.brand = true;
+	// if ("review" in params) withOptions.review = true
+
+	// [____ Reviews ____]
+	let reviewParamValue: any;
+
+	// check for singular
+	if ("review" in params) reviewParamValue = params.review;
+
+	// check for plural
+	if ("reviews" in params) reviewParamValue = params.reviews;
+
+	if (reviewParamValue !== undefined) {
+		const requestedCount = parseInt(reviewParamValue);
+
+		if (!isNaN(requestedCount) && requestedCount >= 1) {
+			console.log("review is a number");
+			withOptions.reviews = { limit: Math.min(requestedCount, 10) }
+		} else {
+			console.log("review is not a number");
+			withOptions.reviews = { limit: 5 }
+		}
+	}
+
+	return withOptions;
 }

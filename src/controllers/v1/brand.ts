@@ -13,10 +13,10 @@ import z from "zod";
 export const brandRouter = Router();
 
 brandRouter.get("/", async (req: Request, res: Response) => {
-	let rawbrands;
+	let rawBrands;
 
 	try {
-		rawbrands = await db.select().from(brands);
+		rawBrands = await db.select().from(brands);
 	} catch (e: unknown) {
 		if (e instanceof Error) {
 			return res.status(500).json({ error: e.message });
@@ -25,24 +25,24 @@ brandRouter.get("/", async (req: Request, res: Response) => {
 		}
 	}
 
-	const parsedbrands = await brandSelectSchema.array().safeParseAsync(rawbrands);
+	const parsedBrands = await brandSelectSchema.array().safeParseAsync(rawBrands);
 
-	if (!parsedbrands.success) {
-		return res.status(500).json({ error: parsedbrands.error.message });
+	if (!parsedBrands.success) {
+		return res.status(500).json({ error: parsedBrands.error.message });
 	}
 
-	return res.json({ "result": parsedbrands.data });
+	return res.json({ "result": parsedBrands.data });
 });
 
 brandRouter.get("/:id", async (req: Request, res: Response) => {
-	let rawbrands;
+	let rawBrands;
 	const id = await z.coerce.number().safeParseAsync(req.params.id);
 	if (!id.success) {
 		return res.status(500).json({ error: id.error.message });
 	}
 
 	try {
-		rawbrands = await db.select().from(brands).where(eq(brands.id, id.data));
+		rawBrands = await db.select().from(brands).where(eq(brands.id, id.data));
 	} catch (e: unknown) {
 		if (e instanceof Error) {
 			return res.status(500).json({ error: e.message });
@@ -51,11 +51,11 @@ brandRouter.get("/:id", async (req: Request, res: Response) => {
 		}
 	}
 
-	const parsedbrands = await brandSelectSchema.array().safeParseAsync(rawbrands);
+	const parsedBrands = await brandSelectSchema.array().safeParseAsync(rawBrands);
 
-	if (!parsedbrands.success) {
-		return res.status(500).json({ error: parsedbrands.error.message });
+	if (!parsedBrands.success) {
+		return res.status(500).json({ error: parsedBrands.error.message });
 	}
 
-	return res.json({ "result": parsedbrands.data });
+	return res.json({ "result": parsedBrands.data });
 });

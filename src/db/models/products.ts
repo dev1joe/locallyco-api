@@ -1,8 +1,10 @@
-import { pgTable, integer, varchar, jsonb } from "drizzle-orm/pg-core";
+import { pgTable } from "drizzle-orm/pg-core";
+import { integer, numeric, varchar, jsonb } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
 import { categories } from "./categories.ts";
 import { brands } from "./brands.ts";
+import { reviews } from "./reviews.ts"
 import timestamps from "../common/columns/timestamps.ts";
 
 export const products = pgTable("products", {
@@ -16,10 +18,14 @@ export const products = pgTable("products", {
 	// New Columns
 	versioning: jsonb(),
 	imageUrl: varchar("image_url", { length: 256 }),
+	
+	// Review Columns
+	reviewCount: integer("review_count"),
+	averageRating: numeric("average_rating", {precision: 3, scale: 2}) 
 });
 
 // Define the relations for the products table
-export const productsRelations = relations(products, ({ one }) => ({
+export const productsRelations = relations(products, ({ one, many }) => ({
 	brand: one(brands, {
 		fields: [products.brandId],
 		references: [brands.id],
@@ -28,4 +34,5 @@ export const productsRelations = relations(products, ({ one }) => ({
 		fields: [products.categoryId],
 		references: [categories.id],
 	}),
+	reviews: many(reviews)
 }));
