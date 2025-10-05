@@ -24,7 +24,7 @@ import { schema } from "@src/db/schema";
 import { to } from "src/utils/to"
 
 
-export const cartRouter = Router();
+export const cartRouter = Router({ mergeParams: true });
 
 cartRouter.get("/", async (req: Request, res: Response) => {
 
