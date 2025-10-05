@@ -1,8 +1,9 @@
-import { pgTable, integer, varchar, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, integer, varchar, jsonb, numeric } from "drizzle-orm/pg-core";
 
 import { categories } from "./categories.ts";
 import { brands } from "./brands.ts";
 import { timestamps } from "../common/columns/timestamps.ts";
+import { review } from "./reviews.ts"
 
 export const products = pgTable("products", {
 	id: integer().primaryKey().generatedAlwaysAsIdentity(),
@@ -14,5 +15,9 @@ export const products = pgTable("products", {
 
 	// New Columns
 	versioning: jsonb(),
-	imageUrl: varchar({ length: 256 }),
+
+	// Review Columns
+	reviewCount: integer("review_count"),
+	averageRating: numeric("average_rating", { precision: 3, scale: 2 })
 });
+

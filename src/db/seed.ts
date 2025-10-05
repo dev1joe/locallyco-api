@@ -28,7 +28,7 @@ import { categories } from './models/categories.ts';
 import { address } from './models/address.ts';
 import { productSku } from './models/product_sku.ts';
 import { productImage } from './models/product_image.ts';
-import { review } from './models/review.ts';
+import { reviews } from './models/reviews.ts';
 
 // --- Define your seed data here ---
 // This data is structured to respect the foreign key dependencies of your schema.
@@ -40,7 +40,7 @@ type InsertPromo = InferInsertModel<typeof promo>;
 type InsertPayment = InferInsertModel<typeof payment>;
 type InsertProducts = InferInsertModel<typeof products>;
 type InsertProductSku = InferInsertModel<typeof productSku>;
-type InsertReview = InferInsertModel<typeof review>;
+type InsertReview = InferInsertModel<typeof reviews>;
 type InsertOrder = InferInsertModel<typeof order>;
 type InsertCart = InferInsertModel<typeof cart>;
 type InsertCartItem = InferInsertModel<typeof cartItem>;
@@ -97,14 +97,18 @@ const seedData: SeedData = {
 	products: [
 		{
 			name: 'Ultra HD Monitor',
-			description: 'A monitor with stunning clarity.',
 			imageUrl: 'https://prd.place/400?id=5&p=40',
+			description: 'A monitor with stunning clarity.',
+			reviewCount: 6,
+			averageRating: "3.83",
 			versioning: { "attributes": { "size": { "type": "integer", "values": ["27", "32"] } } }
 		},
 		{
 			name: 'Cotton Hoodie',
 			imageUrl: 'https://placehold.co/600x400/fff/000',
 			description: 'A comfortable and stylish hoodie.',
+			reviewCount: 8,
+			averageRating: "3.62",
 			versioning: {
 				"attributes": {
 					"size": {
@@ -132,7 +136,7 @@ const seedData: SeedData = {
 		},
 		{
 			name: 'Awsome Hoodie',
-			imageUrl: 'https://placehold.co/600x400/fff/000',
+			// imageUrl: 'https://placehold.co/600x400/fff/000',
 			description: 'A comfortable and stylish hoodie.',
 			versioning: {}
 		}
@@ -144,23 +148,41 @@ const seedData: SeedData = {
 
 	// Level 4: Depends on Products, Payment, Customer, etc.
 	productSku: [
-		{ skuCode: 'MONITOR-UHD-GRAY', attributes: { 'size': '27' }, quantity: 50, priceCent: 35000, images: ['https://prd.place/400?id=5&p=40'] },
-		{ skuCode: 'HOODIE-COT-BLK', attributes: { 'color': '#000', 'size': 'S' }, quantity: 211, priceCent: 5500, images: ['https://placehold.co/600x400/fff/000?text=T-shirt'] },
-		{ skuCode: 'HOODIE-COT-BLK', attributes: { 'color': '#000', 'size': 'M' }, quantity: 107, priceCent: 5500, images: ['https://placehold.co/600x400/fff/000?text=T-shirt'] },
-		{ skuCode: 'HOODIE-COT-BLK', attributes: { 'color': '#000', 'size': 'L' }, quantity: 112, priceCent: 5500, images: ['https://placehold.co/600x400/fff/000?text=T-shirt'] },
-		{ skuCode: 'HOODIE-COT-RED', attributes: { 'color': '#f00', 'size': 'S' }, quantity: 211, priceCent: 5500, images: ['https://placehold.co/600x400/fff/f00?text=T-shirt'] },
-		{ skuCode: 'HOODIE-COT-RED', attributes: { 'color': '#f00', 'size': 'M' }, quantity: 107, priceCent: 5500, images: ['https://placehold.co/600x400/fff/f00?text=T-shirt'] },
-		{ skuCode: 'HOODIE-COT-RED', attributes: { 'color': '#f00', 'size': 'L' }, quantity: 112, priceCent: 5500, images: ['https://placehold.co/600x400/fff/f00?text=T-shirt'] },
-		{ skuCode: 'HOODIE-COT-GRN', attributes: { 'color': '#0f0', 'size': 'S' }, quantity: 211, priceCent: 5500, images: ['https://placehold.co/600x400/fff/0f0?text=T-shirt'] },
-		{ skuCode: 'HOODIE-COT-GRN', attributes: { 'color': '#0f0', 'size': 'M' }, quantity: 107, priceCent: 5500, images: ['https://placehold.co/600x400/fff/0f0?text=T-shirt'] },
-		{ skuCode: 'HOODIE-COT-GRN', attributes: { 'color': '#0f0', 'size': 'L' }, quantity: 112, priceCent: 5500, images: ['https://placehold.co/600x400/fff/0f0?text=T-shirt'] },
-		{ skuCode: 'HOODIE-COT-BLU', attributes: { 'color': '#00f', 'size': 'S' }, quantity: 211, priceCent: 5500, images: ['https://placehold.co/600x400/fff/00f?text=T-shirt'] },
-		{ skuCode: 'HOODIE-COT-BLU', attributes: { 'color': '#00f', 'size': 'M' }, quantity: 107, priceCent: 5500, images: ['https://placehold.co/600x400/fff/00f?text=T-shirt'] },
-		{ skuCode: 'HOODIE-COT-BLU', attributes: { 'color': '#00f', 'size': 'L' }, quantity: 112, priceCent: 5500, images: ['https://placehold.co/600x400/fff/00f?text=T-shirt'] },
+		// monitor SKUs
+		{ productId: 0, skuCode: 'MONITOR-UHD-GRAY', attributes: { 'size': '27' }, quantity: 50, priceCent: 35000, images: ['https://prd.place/400?id=5&p=40'] },
+
+		// Hoodie SKUs
+		{ productId: 1, skuCode: 'HOODIE-COT-BLK', attributes: { 'color': '#000', 'size': 'S' }, quantity: 211, priceCent: 5500, images: ['https://placehold.co/600x400/fff/000?text=T-shirt'] },
+		{ productId: 1, skuCode: 'HOODIE-COT-BLK', attributes: { 'color': '#000', 'size': 'M' }, quantity: 107, priceCent: 5500, images: ['https://placehold.co/600x400/fff/000?text=T-shirt'] },
+		{ productId: 1, skuCode: 'HOODIE-COT-BLK', attributes: { 'color': '#000', 'size': 'L' }, quantity: 112, priceCent: 5500, images: ['https://placehold.co/600x400/fff/000?text=T-shirt'] },
+		{ productId: 1, skuCode: 'HOODIE-COT-RED', attributes: { 'color': '#f00', 'size': 'S' }, quantity: 211, priceCent: 5500, images: ['https://placehold.co/600x400/fff/f00?text=T-shirt'] },
+		{ productId: 1, skuCode: 'HOODIE-COT-RED', attributes: { 'color': '#f00', 'size': 'M' }, quantity: 107, priceCent: 5500, images: ['https://placehold.co/600x400/fff/f00?text=T-shirt'] },
+		{ productId: 1, skuCode: 'HOODIE-COT-RED', attributes: { 'color': '#f00', 'size': 'L' }, quantity: 112, priceCent: 5500, images: ['https://placehold.co/600x400/fff/f00?text=T-shirt'] },
+		{ productId: 1, skuCode: 'HOODIE-COT-GRN', attributes: { 'color': '#0f0', 'size': 'S' }, quantity: 211, priceCent: 5500, images: ['https://placehold.co/600x400/fff/0f0?text=T-shirt'] },
+		{ productId: 1, skuCode: 'HOODIE-COT-GRN', attributes: { 'color': '#0f0', 'size': 'M' }, quantity: 107, priceCent: 5500, images: ['https://placehold.co/600x400/fff/0f0?text=T-shirt'] },
+		{ productId: 1, skuCode: 'HOODIE-COT-GRN', attributes: { 'color': '#0f0', 'size': 'L' }, quantity: 112, priceCent: 5500, images: ['https://placehold.co/600x400/fff/0f0?text=T-shirt'] },
+		{ productId: 1, skuCode: 'HOODIE-COT-BLU', attributes: { 'color': '#00f', 'size': 'S' }, quantity: 211, priceCent: 5500, images: ['https://placehold.co/600x400/fff/00f?text=T-shirt'] },
+		{ productId: 1, skuCode: 'HOODIE-COT-BLU', attributes: { 'color': '#00f', 'size': 'M' }, quantity: 107, priceCent: 5500, images: ['https://placehold.co/600x400/fff/00f?text=T-shirt'] },
+		{ productId: 1, skuCode: 'HOODIE-COT-BLU', attributes: { 'color': '#00f', 'size': 'L' }, quantity: 112, priceCent: 5500, images: ['https://placehold.co/600x400/fff/00f?text=T-shirt'] },
 	] as InsertProductSku[],
 	review: [
-		{ rate: 5, comment: 'This monitor is a game changer!' },
-		{ rate: 4, comment: 'Comfortable fit, good material.' },
+		// monitor reviews
+		{ productId: 0, rate: 5, comment: 'This monitor is a game changer!' },
+		{ productId: 0, rate: 4, comment: 'A solid monitor.' },
+		{ productId: 0, rate: 3, comment: `A nice monitor, but would've been better with 044 Hz.` },
+		{ productId: 0, rate: 3, comment: `Good Monitor!` },
+		{ productId: 0, rate: 4, comment: `Nice Monitor!` },
+		{ productId: 0, rate: 4, comment: `Amazing Monitor!` },
+
+		// hoodie reviews
+		{ productId: 1, rate: 3, comment: 'Very basic hoodie.' },
+		{ productId: 1, rate: 4, comment: 'Comfortable fit, good material.' },
+		{ productId: 1, rate: 4, comment: 'This hoodie looks COOL!' },
+		{ productId: 1, rate: 4, comment: 'Amazing Hoodie' },
+		{ productId: 1, rate: 4, comment: 'Can you add a purple one?' },
+		{ productId: 1, rate: 4, comment: 'Nice Hoodie, shipped quickly!' },
+		{ productId: 1, rate: 4, comment: 'Good Hoodie' },
+		{ productId: 1, rate: 2, comment: `Did't like the material, there are better materials out in the market.` },
 	] as InsertReview[],
 
 	// These arrays were missing; add minimal valid entries matching the DB models
@@ -215,7 +237,7 @@ async function seedDatabase() {
 			await tx.delete(cart);
 			await tx.delete(orderItem);
 			await tx.delete(shipment);
-			await tx.delete(review);
+			await tx.delete(reviews);
 			await tx.delete(productSku);
 			await tx.delete(products);
 			await tx.delete(order);
@@ -260,12 +282,14 @@ async function seedDatabase() {
 			await tx.insert(cartItem).values(seededCartsItem);
 
 
-			let seededProductSkus = seedData.productSku.map(sku => ({ ...sku, productId: productsResult[1].id }));
-			seededProductSkus[0].productId = productsResult[0].id;
+			// Seeding SKUs
+			let seededProductSkus = seedData.productSku.map(sku => ({ ...sku, productId: productsResult[sku.productId].id }));
+			// seededProductSkus[0].productId = productsResult[0].id;
 			const productSkusResult = await tx.insert(productSku).values(seededProductSkus).returning({ id: productSku.id });
 
-			const seededReviews = seedData.review.map(r => ({ ...r, productId: productsResult[0].id }));
-			await tx.insert(review).values(seededReviews);
+			// Seeding Reviews
+			const seededReviews = seedData.review.map(r => ({ ...r, productId: productsResult[r.productId].id }));
+			await tx.insert(reviews).values(seededReviews);
 
 			const seededOrderItems = seedData.orderItem.map(oi => ({ ...oi, orderId: ordersResult[0].id, productId: productsResult[0].id }));
 			const orderItemsResult = await tx.insert(orderItem).values(seededOrderItems).returning({ id: orderItem.id });

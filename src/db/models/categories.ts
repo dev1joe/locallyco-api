@@ -1,4 +1,4 @@
-import { foreignKey, pgTable, integer, varchar, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, foreignKey, integer, varchar, jsonb } from "drizzle-orm/pg-core";
 
 import { timestamps } from "../common/columns/timestamps.ts";
 

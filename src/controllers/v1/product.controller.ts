@@ -1,12 +1,14 @@
 import * as E from "express";
+import { type Request, type Response } from "express"
 import * as PS from "../../services/v1/product.service.ts";
 import * as SS from "../../services/v1/sku.service.ts";
 import { validationResult, matchedData } from "express-validator";
 
-export async function getProducts(req: E.Request, res: E.Response) {
+export async function getProducts(req: Request, res: Response) {
     try {
-        const params = req.query;
-        const products = await PS.getProducts();
+        const queryParams = req.query;
+        console.log("request query params", queryParams)
+        const products = await PS.getProducts(queryParams);
 
         if (!products) {
             return res.status(500).json({ error: "Failed to retrieve products" });
@@ -26,7 +28,7 @@ export async function getProductById(req: E.Request, res: E.Response) {
     }
 
     try {
-        const product = await PS.getProductById(id);
+        const product = await PS.getProductById(id, req.query);
         if (!product) {
             return res.status(404).json({ error: "Product not found" });
         }

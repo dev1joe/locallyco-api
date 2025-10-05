@@ -6,9 +6,9 @@ import { products } from "./products.ts"
 
 // TODO: add user and link it with review table
 
-export const review = pgTable("review", {
+export const reviews = pgTable("review", {
 	id: integer().primaryKey().generatedAlwaysAsIdentity(),
-	productId: integer().references(() => products.id),
+	productId: integer().references(() => products.id).notNull(),
 	// userId: integer("user_id").references(() =>),
 	rate: integer(),
 	comment: varchar({ length: 1000 }),

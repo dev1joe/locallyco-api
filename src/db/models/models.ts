@@ -13,5 +13,5 @@ export * from './categories.ts';
 export * from './address.ts';
 export * from './product_sku.ts';
 export * from './product_image.ts';
-export * from './review.ts';
+export * from './reviews.ts';
 export * from './auth-schema.ts';
