@@ -80,7 +80,7 @@ cartRouter.post("/:cartId", async (req: Request, res: Response) => {
 	}
 
 	try {
-		await db.insert(carts).values(parsedcarts.data);
+		await db.insert(schema.cart).values(parsedcarts.data);
 	} catch (e: unknown) {
 		if (e instanceof Error) {
 			return res.status(500).json({
@@ -111,7 +111,7 @@ cartRouter.put("/:id", async (req: Request, res: Response) => {
 	}
 
 	try {
-		await db.update(carts).set(parsedcarts.data).where(eq(carts.id, id.data));
+		await db.update(schema.cart).set(parsedcarts.data).where(eq(schema.cart.id, id.data));
 	} catch (e: unknown) {
 		if (e instanceof Error) {
 			return res.status(500).json({
@@ -137,9 +137,9 @@ cartRouter.delete("/:id", async (req: Request, res: Response) => {
 		}
 
 		const deletedId = await db
-			.delete(carts)
-			.where(eq(carts.id, id.data))
-			.returning({ deleteId: carts.id });
+			.delete(schema.cart)
+			.where(eq(schema.cart.id, id.data))
+			.returning({ deleteId: schema.cart.id });
 
 		if (deletedId.length === 0) {
 			return res.status(404).json({
