@@ -1,15 +1,15 @@
 import { pgTable } from "drizzle-orm/pg-core";
-import { integer, varchar } from "drizzle-orm/pg-core";
-import timestamps from "../common/columns/timestamps.ts";
+import { integer, varchar, text } from "drizzle-orm/pg-core";
+import { timestamps } from "../common/columns/timestamps.ts";
 
-import address from "./address.ts";
+import { address } from "./address.ts";
+import { user } from "./auth-schema.ts";
 
-const customer = pgTable("customer", {
+export const customer = pgTable("customer", {
 	id: integer().primaryKey().generatedAlwaysAsIdentity(),
 	addressId: integer("address_id").references(() => address.id),
+	userId: text().references(() => user.id),
 	fname: varchar({ length: 256 }),
 	lname: varchar({ length: 256 }),
 	...timestamps
 });
-
-export default customer;

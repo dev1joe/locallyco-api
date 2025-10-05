@@ -15,20 +15,20 @@ import type { InferInsertModel } from 'drizzle-orm';
 
 import { products } from './models/products.ts';
 import { brands } from './models/brands.ts';
-import shipment from './models/shipment.ts';
-import order from './models/order.ts';
-import orderItem from './models/order_item.ts';
-import returnItem from './models/return_item.ts';
-import payment from './models/payment.ts';
-import promo from './models/promo.ts';
-import customer from './models/customer.ts';
-import cart from './models/cart.ts';
-import cartItem from './models/cart_item.ts';
+import { shipment } from './models/shipment.ts';
+import { order } from './models/order.ts';
+import { orderItem } from './models/order_item.ts';
+import { returnItem } from './models/return_item.ts';
+import { payment } from './models/payment.ts';
+import { promo } from './models/promo.ts';
+import { customer } from './models/customer.ts';
+import { cart } from './models/cart.ts';
+import { cartItem } from './models/cart_item.ts';
 import { categories } from './models/categories.ts';
-import address from './models/address.ts';
-import productSku from './models/product_sku.ts';
-import productImages from './models/product_image.ts';
-import review from './models/review.ts';
+import { address } from './models/address.ts';
+import { productSku } from './models/product_sku.ts';
+import { productImage } from './models/product_image.ts';
+import { review } from './models/review.ts';
 
 // --- Define your seed data here ---
 // This data is structured to respect the foreign key dependencies of your schema.
@@ -43,8 +43,9 @@ type InsertProductSku = InferInsertModel<typeof productSku>;
 type InsertReview = InferInsertModel<typeof review>;
 type InsertOrder = InferInsertModel<typeof order>;
 type InsertCart = InferInsertModel<typeof cart>;
+type InsertCartItem = InferInsertModel<typeof cartItem>;
 type InsertOrderItem = InferInsertModel<typeof orderItem>;
-type InsertProductImages = InferInsertModel<typeof productImages>;
+type InsertProductImages = InferInsertModel<typeof productImage>;
 type InsertReturnItem = InferInsertModel<typeof returnItem>;
 type InsertShipment = InferInsertModel<typeof shipment>;
 
@@ -59,9 +60,10 @@ type SeedData = {
 	productSku: InsertProductSku[];
 	review: InsertReview[];
 	orderItem: InsertOrderItem[];
-	productImages: InsertProductImages[];
+	productImage: InsertProductImages[];
 	returnItem: InsertReturnItem[];
 	cart: InsertCart[];
+	cartItem: InsertCartItem[];
 	order: InsertOrder[];
 	shipment: InsertShipment[];
 };
@@ -128,6 +130,12 @@ const seedData: SeedData = {
 				}
 			}
 		},
+		{
+			name: 'Awsome Hoodie',
+			imageUrl: 'https://placehold.co/600x400/fff/000',
+			description: 'A comfortable and stylish hoodie.',
+			versioning: {}
+		}
 	] as InsertProducts[],
 	payment: [
 		{ promoId: 1, priceCent: 12000, type: 'Credit Card', status: 1 },
@@ -136,7 +144,7 @@ const seedData: SeedData = {
 
 	// Level 4: Depends on Products, Payment, Customer, etc.
 	productSku: [
-		{ skuCode: 'MONITOR-UHD-GRAY', attributes: { 'size': '27' }, quantity: 50, priceCent: 35000, images:  ['https://prd.place/400?id=5&p=40'] },
+		{ skuCode: 'MONITOR-UHD-GRAY', attributes: { 'size': '27' }, quantity: 50, priceCent: 35000, images: ['https://prd.place/400?id=5&p=40'] },
 		{ skuCode: 'HOODIE-COT-BLK', attributes: { 'color': '#000', 'size': 'S' }, quantity: 211, priceCent: 5500, images: ['https://placehold.co/600x400/fff/000?text=T-shirt'] },
 		{ skuCode: 'HOODIE-COT-BLK', attributes: { 'color': '#000', 'size': 'M' }, quantity: 107, priceCent: 5500, images: ['https://placehold.co/600x400/fff/000?text=T-shirt'] },
 		{ skuCode: 'HOODIE-COT-BLK', attributes: { 'color': '#000', 'size': 'L' }, quantity: 112, priceCent: 5500, images: ['https://placehold.co/600x400/fff/000?text=T-shirt'] },
@@ -159,7 +167,7 @@ const seedData: SeedData = {
 	orderItem: [
 		{ quantity: 1, itemPriceCent: 35000 },
 	] as InferInsertModel<typeof orderItem>[],
-	productImages: [
+	productImage: [
 		{ image: 'https://example.com/images/monitor-uhd.jpg' },
 	] as InsertProductImages[],
 	returnItem: [
@@ -169,6 +177,8 @@ const seedData: SeedData = {
 	// Level 5: Depends on Product SKU, Order, etc.
 	cart: [
 		{ name: 'John Doe\'s Cart', status: 1 },
+		{ name: 'Mary Jane\'s Cart', status: 1 },
+		{ name: 'Bob Marley\'s Cart', status: 1 },
 	] as InsertCart[],
 	order: [
 		{}, // Will be linked to a customer, address, and payment
@@ -176,6 +186,13 @@ const seedData: SeedData = {
 	shipment: [
 		{ stage: 1, estimatedTime: 5, status: 1 },
 	] as InsertShipment[],
+
+	cartItem: [
+		{ quantity: 3 },
+		{ quantity: 3 },
+		{ quantity: 3 },
+
+	] as InsertCartItem[],
 };
 
 
@@ -193,7 +210,7 @@ async function seedDatabase() {
 		await db.transaction(async (tx) => {
 			console.log('Deleting existing data...');
 			// IMPORTANT: Delete in reverse order of foreign key dependencies
-			await tx.delete(productImages);
+			await tx.delete(productImage);
 			await tx.delete(returnItem);
 			await tx.delete(cart);
 			await tx.delete(orderItem);
@@ -208,6 +225,7 @@ async function seedDatabase() {
 			await tx.delete(promo);
 			await tx.delete(categories);
 			await tx.delete(address);
+			await tx.delete(cartItem);
 
 			console.log('Existing data deleted.');
 
@@ -234,7 +252,13 @@ async function seedDatabase() {
 			const ordersResult = await tx.insert(order).values(seededOrders).returning({ id: order.id });
 
 			const seededCarts = seedData.cart.map(c => ({ ...c, customerId: customersResult[0].id }));
-			await tx.insert(cart).values(seededCarts);
+			const cartsResult = await tx.insert(cart).values(seededCarts).returning({ id: cart.id });
+
+			const seededCartsItem = seedData.cartItem.map((c, index) => (
+				{ cartId: cartsResult[index].id, ...c }
+			));
+			await tx.insert(cartItem).values(seededCartsItem);
+
 
 			let seededProductSkus = seedData.productSku.map(sku => ({ ...sku, productId: productsResult[1].id }));
 			seededProductSkus[0].productId = productsResult[0].id;
@@ -249,8 +273,8 @@ async function seedDatabase() {
 			const seededShipments = seedData.shipment.map(s => ({ ...s, orderId: ordersResult[0].id }));
 			await tx.insert(shipment).values(seededShipments);
 
-			const seededProductImages = seedData.productImages.map(pi => ({ ...pi, productSkuId: productSkusResult[0].id }));
-			await tx.insert(productImages).values(seededProductImages);
+			const seededProductImages = seedData.productImage.map(pi => ({ ...pi, productSkuId: productSkusResult[0].id }));
+			await tx.insert(productImage).values(seededProductImages);
 
 			const seededReturnItems = seedData.returnItem.map(ri => ({ ...ri, orderItemId: orderItemsResult[0].id }));
 			await tx.insert(returnItem).values(seededReturnItems);

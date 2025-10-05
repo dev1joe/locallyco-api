@@ -6,6 +6,7 @@ import { toNodeHandler } from "better-auth/node"
 import { auth } from "src/lib/auth"
 import cors from "cors";
 import { brandRouter } from "./controllers/v1/brand";
+import { cartRouter } from "./controllers/v1/cart";
 
 // TODO: use cors, compression
 const app = express();
@@ -26,6 +27,7 @@ const v1 = Router();
 v1.use("/products", productRouter);
 // v1.use("/sku", skuRouter);
 v1.use("/brands", brandRouter);
+v1.use("/customers/:customerId/carts", cartRouter);
 
 app.use("/api/v1", v1);
 

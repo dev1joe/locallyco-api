@@ -1,15 +1,15 @@
 import { createSelectSchema, createInsertSchema, createUpdateSchema } from "drizzle-zod";
 import { z } from "zod"
-import placeholder from "src/db/models/placeholder.ts"
+import { schema } from "src/db/schema"
 import xss from "xss";
 
-//: (schema) => schema.transform((item) => xss(item)),
+//: (columnSchema) => columnSchema.transform((item) => xss(item)),
 
-export const placeholderSelectSchema = createSelectSchema(placeholder);
+export const placeholderSelectSchema = createSelectSchema(schema.placeholder);
 export type PlaceholderSelectSchema = z.infer<typeof placeholderSelectSchema>;
 
-export const placeholderInsertSchema = createInsertSchema(placeholder)
+export const placeholderInsertSchema = createInsertSchema(schema.placeholder)
 export type PlaceholderInsertSchema = z.infer<typeof placeholderInsertSchema>;
 
-export const placeholderUpdateSchema = createUpdateSchema(placeholder)
+export const placeholderUpdateSchema = createUpdateSchema(schema.placeholder)
 export type PlaceholderUpdateSchema = z.infer<typeof placeholderUpdateSchema>;

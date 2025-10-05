@@ -2,32 +2,31 @@ import { createSelectSchema, createInsertSchema, createUpdateSchema } from "driz
 import { z } from "zod"
 import xss from "xss";
 
-import address from "src/db/models/address.ts"
+import { schema } from "@src/db/schema";
 
-
-export const addressSelectSchema = createSelectSchema(address, {
-	country: (schema) => schema.transform((item) => xss(item)),
-	governorate: (schema) => schema.transform((item) => xss(item)),
-	district: (schema) => schema.transform((item) => xss(item)),
-	street: (schema) => schema.transform((item) => xss(item)),
-	building: (schema) => schema.transform((item) => xss(item)),
+export const addressSelectSchema = createSelectSchema(schema.address, {
+	country: (columnSchema) => columnSchema.transform((item) => xss(item)),
+	governorate: (columnSchema) => columnSchema.transform((item) => xss(item)),
+	district: (columnSchema) => columnSchema.transform((item) => xss(item)),
+	street: (columnSchema) => columnSchema.transform((item) => xss(item)),
+	building: (columnSchema) => columnSchema.transform((item) => xss(item)),
 });
 export type addressSelectSchema = z.infer<typeof addressSelectSchema>;
 
-export const addressInsertSchema = createInsertSchema(address, {
-	country: (schema) => schema.transform((item) => xss(item)),
-	governorate: (schema) => schema.transform((item) => xss(item)),
-	district: (schema) => schema.transform((item) => xss(item)),
-	street: (schema) => schema.transform((item) => xss(item)),
-	building: (schema) => schema.transform((item) => xss(item)),
+export const addressInsertSchema = createInsertSchema(schema.address, {
+	country: (columnSchema) => columnSchema.transform((item) => xss(item)),
+	governorate: (columnSchema) => columnSchema.transform((item) => xss(item)),
+	district: (columnSchema) => columnSchema.transform((item) => xss(item)),
+	street: (columnSchema) => columnSchema.transform((item) => xss(item)),
+	building: (columnSchema) => columnSchema.transform((item) => xss(item)),
 });
 export type addressInsertSchema = z.infer<typeof addressInsertSchema>;
 
-export const addressUpdateSchema = createUpdateSchema(address, {
-	country: (schema) => schema.transform((item) => xss(item)),
-	governorate: (schema) => schema.transform((item) => xss(item)),
-	district: (schema) => schema.transform((item) => xss(item)),
-	street: (schema) => schema.transform((item) => xss(item)),
-	building: (schema) => schema.transform((item) => xss(item)),
+export const addressUpdateSchema = createUpdateSchema(schema.address, {
+	country: (columnSchema) => columnSchema.transform((item) => xss(item)),
+	governorate: (columnSchema) => columnSchema.transform((item) => xss(item)),
+	district: (columnSchema) => columnSchema.transform((item) => xss(item)),
+	street: (columnSchema) => columnSchema.transform((item) => xss(item)),
+	building: (columnSchema) => columnSchema.transform((item) => xss(item)),
 });
 export type addressUpdateSchema = z.infer<typeof addressUpdateSchema>;

@@ -1,18 +1,20 @@
 import { config } from "../../config/config.ts";
-import * as schema from "./schema.ts";
+import { schema } from "./schema.ts";
+import * as relations from "./relations"
 import { drizzle, NodePgDatabase } from "drizzle-orm/node-postgres"
 import { Pool } from "pg"
 
-//TODO: Handle db init failure gracefully
-function connectToDatabase(credentials: Object): NodePgDatabase<typeof schema> {
+const schema_relations = { ...schema, ...relations }
+
+function connectToDatabase(credentials: Object): NodePgDatabase<typeof schema_relations> {
 	const pool = new Pool(credentials);
 	return drizzle(pool, {
-		schema: schema,
+		schema: schema_relations,
 		casing: "snake_case",
 	});
 }
 
-let db: NodePgDatabase<typeof schema>;
+let db: NodePgDatabase<typeof schema_relations>;
 
 try {
 	db = connectToDatabase(config.db);

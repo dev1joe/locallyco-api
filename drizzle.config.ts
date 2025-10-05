@@ -14,6 +14,7 @@ export default defineConfig({
 	out: './src/db/migrations',
 	verbose: true,
 	strict: true,
+	casing: "snake_case",
 
 	dbCredentials: config.db,
 

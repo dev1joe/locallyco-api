@@ -1,5 +1,6 @@
 import db from "../../db/db.ts";
-import sku from "../../db/models/product_sku.ts";
+import { schema } from "src/db/schema.ts"
+const { productSku: sku } = schema
 import { eq } from "drizzle-orm";
 
 export async function getSku(): Promise<Array<Object>> {

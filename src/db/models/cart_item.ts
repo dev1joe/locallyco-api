@@ -1,16 +1,14 @@
 import { pgTable } from "drizzle-orm/pg-core";
-import { integer, varchar } from "drizzle-orm/pg-core";
-import timestamps from "../common/columns/timestamps.ts";
+import { integer } from "drizzle-orm/pg-core";
+import { timestamps } from "../common/columns/timestamps.ts";
 
-import cart from "./cart.ts"
+import { cart } from "./cart.ts"
 import { products } from "./products.ts"
 
-const cartItem = pgTable("order_item", {
+export const cartItem = pgTable("cart_item", {
 	id: integer().primaryKey().generatedAlwaysAsIdentity(),
-	cartId: integer("cart_id").references(() => cart.id),
-	productId: integer("product_id").references(() => products.id),
+	cartId: integer().references(() => cart.id),
+	productId: integer().references(() => products.id),
 	quantity: integer(),
 	...timestamps
 });
-
-export default cartItem;
