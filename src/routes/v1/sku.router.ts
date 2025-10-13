@@ -1,7 +1,7 @@
 import Router from "express";
 import * as SC from "../../controllers/v1/sku.controller.ts";
 import { checkSchema } from "express-validator";
-import createSkuValidationSchema from "../../validators/v1/createSkuValidationSchema.ts";
+import createSkuValidationSchema from "../../trash/createSkuValidationSchema.ts";
 
 const skuRouter = Router();
 

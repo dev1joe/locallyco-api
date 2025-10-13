@@ -2,9 +2,11 @@ import { pgTable } from "drizzle-orm/pg-core";
 import { integer, varchar } from "drizzle-orm/pg-core";
 import { timestamps } from "../common/columns/timestamps.ts";
 
-export const promo = pgTable("promo", {
+import { productSkus } from "./productSkus.ts"
+
+export const productImages = pgTable("product_images", {
 	id: integer().primaryKey().generatedAlwaysAsIdentity(),
-	key: varchar({ length: 256 }),
-	percentage: integer(),
+	productSkuId: integer().references(() => productSkus.id),
+	image: varchar({ length: 256 }),
 	...timestamps
 });

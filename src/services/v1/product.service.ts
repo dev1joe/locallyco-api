@@ -1,7 +1,8 @@
+import { NewProduct } from "@src/db/types.ts";
 import db from "../../db/db.ts";
 import { products } from "../../db/models/products.ts";
 import { eq } from "drizzle-orm";
-import type { createProductDTO } from "../../types/v1/product.ts";
+import { getProductRatingStats } from "./reviews.service.ts";
 
 // TODO: pull in reviews data (all and single) including total rating, number of reviews, first 5 reviews, rating distribution
 // TODO: add product features varchar array column and pull it in (all and single)
@@ -32,21 +33,32 @@ export async function getProductById(id: number, params?: Record<string, any>): 
 		withOptions = applyQueryParams(params);
 	}
 
-	return await db?.query.products.findFirst({
+	if (withOptions.reviews) {
+		withOptions.reviews = {
+			...withOptions.reviews,
+			with: { customer: { columns: { id: true, fname: true, lname: true }}}
+		}
+	}
+
+	const product = await db?.query.products.findFirst({
 		where: eq(products.id, id),
 		with: withOptions,
 	}) || [];
+
+	if (!product) return null;
+
+	const ratingStats = await getProductRatingStats(id);
+
+	return { ...product, ratingStats };
 }
 
-export async function createProduct(data: createProductDTO) {
+export async function createProduct(data: NewProduct) {
 	console.log(data);
-	// TODO: should the client send data in camel case or snake case
-	// either way, we are controlling the client, haha :)
-	const { name, description, category_id, brand_id, versioning } = data;
-	return await db?.insert(products).values({ name, description, categoryId: category_id, brandId: brand_id, versioning });
+	const { name, description, categoryId, brandId, attributes } = data;
+	return await db?.insert(products).values({ name, description, categoryId, brandId, attributes });
 }
 
-export async function updateProduct(id: number, data: createProductDTO) {
+export async function updateProduct(id: number, data: NewProduct) {
 	return await db?.update(products).set(data).where(eq(products.id, id));
 }
 
@@ -60,7 +72,7 @@ function applyQueryParams(params: Record<string, any>): Record<string, any> {
 	// [____ Category ____]
 	if ("category" in params) withOptions.category = true;
 
-	// [____ Reviews ____]
+	// [____ Brands ____]
 	if ("brand" in params) withOptions.brand = true;
 	// if ("review" in params) withOptions.review = true
 

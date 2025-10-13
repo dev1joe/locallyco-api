@@ -3,7 +3,7 @@ export interface createProductDTO {
     description: string,
     category_id: number,
     brand_id: number,
-    versioning: Object
+    attributes: Object
 }
 
 export interface productDTO extends createProductDTO {

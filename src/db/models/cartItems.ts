@@ -2,11 +2,13 @@ import { pgTable } from "drizzle-orm/pg-core";
 import { integer } from "drizzle-orm/pg-core";
 import { timestamps } from "../common/columns/timestamps.ts";
 
-import { orderItem } from "./order_item.ts"
+import { carts } from "./carts.ts"
+import { products } from "./products.ts"
 
-export const returnItem = pgTable("return_item", {
+export const cartItems = pgTable("cart_items", {
 	id: integer().primaryKey().generatedAlwaysAsIdentity(),
-	orderItemId: integer().references(() => orderItem.id),
+	cartId: integer().references(() => carts.id),
+	productId: integer().references(() => products.id),
 	quantity: integer(),
 	...timestamps
 });
