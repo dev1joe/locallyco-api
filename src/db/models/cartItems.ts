@@ -4,11 +4,12 @@ import { timestamps } from "../common/columns/timestamps.ts";
 import { check } from "drizzle-orm/pg-core/checks";
 import { sql } from "drizzle-orm";
 
-import { cart } from "./cart.ts"
+import { carts } from "./carts.ts"
 import { products } from "./products.ts"
-export const cartItem = pgTable("cart_item", {
+
+export const cartItems = pgTable("cart_items", {
 	id: integer().primaryKey().generatedAlwaysAsIdentity(),
-	cartId: integer().references(() => cart.id).notNull(),
+	cartId: integer().references(() => carts.id).notNull(),
 	productId: integer().references(() => products.id).notNull(),
 	quantity: integer().notNull(),
 	...timestamps

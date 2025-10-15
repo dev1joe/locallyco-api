@@ -5,71 +5,15 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1756754823480,
-      "tag": "20250901192703_right_living_tribunal",
+      "when": 1760318977814,
+      "tag": "20251013012937_cooing_gertrude_yorkes",
       "breakpoints": true
     },
     {
       "idx": 1,
       "version": "7",
-      "when": 1756773365708,
-      "tag": "20250902003605_modern_bruce_banner",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1756938447864,
-      "tag": "20250903222727_cynical_wraith",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1758729739180,
-      "tag": "20250924160219_breezy_cerise",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1759059655216,
-      "tag": "20250928114055_bored_jack_power",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1759650095300,
-      "tag": "20251005074135_busy_penance",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "7",
-      "when": 1759650717930,
-      "tag": "20251005075157_wakeful_mister_fear",
-      "breakpoints": true
-    },
-    {
-      "idx": 7,
-      "version": "7",
-      "when": 1759651378605,
-      "tag": "20251005080258_lively_lady_bullseye",
-      "breakpoints": true
-    },
-    {
-      "idx": 8,
-      "version": "7",
-      "when": 1759655487075,
-      "tag": "20251005091127_mysterious_titania",
-      "breakpoints": true
-    },
-    {
-      "idx": 9,
-      "version": "7",
-      "when": 1759692199907,
-      "tag": "20251005192319_salty_wiccan",
+      "when": 1760572509544,
+      "tag": "20251015235509_absent_joystick",
       "breakpoints": true
     }
   ]

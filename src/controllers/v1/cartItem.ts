@@ -16,11 +16,11 @@ export const cartItemRouter = Router({ mergeParams: true })
 
 const getCustomerCartQuery = (customerId: number, cartId: number) => {
 	return db
-		.select({ id: schema.cart.id })
-		.from(schema.cart)
+		.select({ id: schema.carts.id })
+		.from(schema.carts)
 		.where(and(
-			eq(schema.cart.customerId, customerId),
-			eq(schema.cart.id, cartId)
+			eq(schema.carts.customerId, customerId),
+			eq(schema.carts.id, cartId)
 		)
 		)
 }
@@ -68,13 +68,13 @@ cartItemRouter.post("/", async (req: Request, res: Response<ApiResponse>) => {
 		}
 
 		const id = await tx
-			.insert(schema.cartItem)
+			.insert(schema.cartItems)
 			.values({
 				cartId: parsedCartItems.data.cartId,
 				productId: parsedCartItems.data.productId,
 				quantity: parsedCartItems.data.quantity,
 			})
-			.returning({ id: schema.cartItem.id })
+			.returning({ id: schema.cartItems.id })
 
 		return id
 	}));
@@ -123,17 +123,17 @@ cartItemRouter.put("/:cartItemId", async (req: Request, res: Response<ApiRespons
 	}
 
 	const updatedId = await to(db
-		.update(schema.cartItem)
+		.update(schema.cartItems)
 		.set({
 			quantity: parsedCartItems.data.quantity,
 			updatedAt: sql`NOW()`
 		})
 		.where(and(
 			exists(getCustomerCartQuery(customerId, cartId)),
-			eq(schema.cartItem.cartId, cartId),
-			eq(schema.cartItem.id, cartItemId),
+			eq(schema.cartItems.cartId, cartId),
+			eq(schema.cartItems.id, cartItemId),
 		))
-		.returning({ id: schema.cartItem.id })
+		.returning({ id: schema.cartItems.id })
 	);
 
 	if (!updatedId.success) {
@@ -180,13 +180,13 @@ cartItemRouter.delete("/:cartItemId", async (req: Request, res: Response<ApiResp
 
 	// Query
 	const deletedId = await to(db
-		.delete(schema.cartItem)
+		.delete(schema.cartItems)
 		.where(and(
 			exists(getCustomerCartQuery(customerId, cartId)),
-			eq(schema.cartItem.cartId, cartId),
-			eq(schema.cartItem.id, cartItemId),
+			eq(schema.cartItems.cartId, cartId),
+			eq(schema.cartItems.id, cartItemId),
 		))
-		.returning({ id: schema.cartItem.id })
+		.returning({ id: schema.cartItems.id })
 	);
 
 	if (!deletedId.success) {

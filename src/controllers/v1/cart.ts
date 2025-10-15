@@ -34,8 +34,8 @@ cartRouter.get("/", async (req: Request, res: Response<ApiResponse>) => {
 
 	const customerId = parsedParams.data.customerId
 
-	const rawCarts = await to(db.query.cart.findMany({
-		where: eq(schema.cart.customerId, customerId),
+	const rawCarts = await to(db.query.carts.findMany({
+		where: eq(schema.carts.customerId, customerId),
 		with: {
 			cartItems: {
 				with: { product: true }
@@ -109,13 +109,13 @@ cartRouter.post("/", async (req: Request, res: Response<ApiResponse>) => {
 
 	// Query
 	const newCartId = await to(db
-		.insert(schema.cart)
+		.insert(schema.carts)
 		.values({
 			customerId: parsedcarts.data.customerId,
 			name: parsedcarts.data.name,
 			status: parsedcarts.data.status,
 		})
-		.returning({ id: schema.cart.id })
+		.returning({ id: schema.carts.id })
 	);
 
 	if (!newCartId.success) {
@@ -162,14 +162,14 @@ cartRouter.put("/:cartId", async (req: Request, res: Response<ApiResponse>) => {
 
 	// Query
 	const newCartId = await to(db
-		.update(schema.cart)
+		.update(schema.carts)
 		.set({
 			name: parsedcarts.data.name,
 			status: parsedcarts.data.status,
 			updatedAt: sql`NOW()`
 		})
-		.where(and(eq(schema.cart.id, cartId), eq(schema.cart.customerId, customerId)))
-		.returning({ id: schema.cart.id })
+		.where(and(eq(schema.carts.id, cartId), eq(schema.carts.customerId, customerId)))
+		.returning({ id: schema.carts.id })
 	);
 
 	if (!newCartId.success) {
@@ -217,9 +217,9 @@ cartRouter.delete("/:cartId", async (req: Request, res: Response<ApiResponse>) =
 
 	// Query
 	const deletedId = await to(db
-		.delete(schema.cart)
-		.where(and(eq(schema.cart.id, cartId), eq(schema.cart.customerId, customerId)))
-		.returning({ id: schema.cart.id })
+		.delete(schema.carts)
+		.where(and(eq(schema.carts.id, cartId), eq(schema.carts.customerId, customerId)))
+		.returning({ id: schema.carts.id })
 	);
 
 	if (!deletedId.success) {

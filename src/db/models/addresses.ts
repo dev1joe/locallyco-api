@@ -2,7 +2,7 @@ import { pgTable } from "drizzle-orm/pg-core";
 import { integer, varchar } from "drizzle-orm/pg-core";
 import { timestamps } from "../common/columns/timestamps.ts";
 
-export const address = pgTable("address", {
+export const addresses = pgTable("addresses", {
 	id: integer().primaryKey().generatedAlwaysAsIdentity(),
 	country: varchar({ length: 256 }),
 	governorate: varchar({ length: 256 }),

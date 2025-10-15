@@ -1,34 +1,34 @@
 import db from "../../db/db.ts";
-import { schema } from "src/db/schema.ts"
-const { productSku: sku } = schema
+import { productSkus } from "@src/db/models/productSkus.ts";
+import { NewProductSku } from "@src/db/types.ts";
 import { eq } from "drizzle-orm";
 
 export async function getSku(): Promise<Array<Object>> {
-    return await db?.select().from(sku) || [];
+    return await db?.select().from(productSkus) || [];
 }
 
 export async function getSkuById(id: number): Promise<Object | null> {
-    const result = await db?.select().from(sku).where(eq(sku.id, id));
+    const result = await db?.select().from(productSkus).where(eq(productSkus.id, id));
     return result[0] || null;
 }
 
 export async function getSkuByCode(code: string): Promise<Object | null> {
-    const result = await db?.select().from(sku).where(eq(sku.skuCode, code));
+    const result = await db?.select().from(productSkus).where(eq(productSkus.skuCode, code));
     return result[0] || null;
 }
 
 export async function getSkuByProductId(id: number): Promise<Array<Object>> {
-    return await db?.select().from(sku).where(eq(sku.productId, id));
+    return await db?.select().from(productSkus).where(eq(productSkus.productId, id));
 }
 
-export async function createSku(data: Object) {
-    return await db?.insert(sku).values(data);
+export async function createSku(data: NewProductSku) {
+    return await db?.insert(productSkus).values(data);
 }
 
 export async function updateSku(id: number, data: Object) {
-    return await db?.update(sku).set(data).where(eq(sku.id, id));
+    return await db?.update(productSkus).set(data).where(eq(productSkus.id, id));
 }
 
 export async function deleteSku(id: number) {
-    return await db?.delete(sku).where(eq(sku.id, id));
+    return await db?.delete(productSkus).where(eq(productSkus.id, id));
 }
