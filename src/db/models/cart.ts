@@ -6,8 +6,8 @@ import { customer } from "./customer"
 
 export const cart = pgTable("cart", {
 	id: integer().primaryKey().generatedAlwaysAsIdentity(),
-	customerId: integer().references(() => customer.id, { onDelete: "cascade" }),
-	name: varchar({ length: 256 }),
-	status: integer(),
+	customerId: integer().references(() => customer.id, { onDelete: "cascade" }).notNull(),
+	name: varchar({ length: 256 }).notNull(),
+	status: integer().notNull(),
 	...timestamps
 });

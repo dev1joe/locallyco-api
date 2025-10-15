@@ -1,5 +1,5 @@
 import { Router, type Response, type Request } from "express";
-import { eq } from "drizzle-orm";
+import { eq, and, sql } from "drizzle-orm";
 import z from "zod";
 
 import {
@@ -8,43 +8,46 @@ import {
 	cartUpdateSchema,
 } from "src/validators/v1/carts";
 
-import {
-	productsSelectSchema,
-	productsInsertSchema,
-	productsUpdateSchema
-} from "src/validators/v1/products"
-
-import {
-	cartItemSelectSchema,
-	cartItemInsertSchema,
-	cartItemUpdateSchema
-} from "src/validators/v1/cartItems"
+import { productsSelectSchema } from "src/validators/v1/products"
+import { cartItemSelectSchema } from "src/validators/v1/cartItems"
 import db from "@src/db/db";
 import { schema } from "@src/db/schema";
 import { to } from "src/utils/to"
-
+import { ApiResponse } from "@src/types/v1/response";
+import { cartItemRouter } from "./cartItem";
 
 export const cartRouter = Router({ mergeParams: true });
+cartRouter.use("/:cartId", cartItemRouter);
 
-cartRouter.get("/", async (req: Request, res: Response) => {
+// Get all user carts with cart items
+cartRouter.get("/", async (req: Request, res: Response<ApiResponse>) => {
 
-	const rawcustomerId = await z.coerce.number().safeParseAsync(req.params.customerId)
-	if (!rawcustomerId.success) {
-		return res.status(500).json({ error: rawcustomerId.error.issues, hello: "hello" });
+	const paramsSchema = z.object({ customerId: z.coerce.number() })
+
+	const parsedParams = await paramsSchema.safeParseAsync(req.params)
+	if (!parsedParams.success) {
+		return res.status(500).json({
+			success: false,
+			error: parsedParams.error.issues,
+		});
 	}
-	const customerId = rawcustomerId.data
+
+	const customerId = parsedParams.data.customerId
 
 	const rawCarts = await to(db.query.cart.findMany({
+		where: eq(schema.cart.customerId, customerId),
 		with: {
 			cartItems: {
 				with: { product: true }
 			}
 		},
-		where: eq(schema.cart.customerId, customerId)
 	}))
 
 	if (!rawCarts.success) {
-		return res.status(500).json({ error: rawCarts.error.message });
+		return res.status(500).json({
+			success: false,
+			error: rawCarts.error.message,
+		});
 	}
 
 	const validationSchema = z.strictObject({
@@ -58,7 +61,10 @@ cartRouter.get("/", async (req: Request, res: Response) => {
 	const parsedCarts = await validationSchema.safeParseAsync(rawCarts.data);
 
 	if (!parsedCarts.success) {
-		return res.status(500).json({ error: parsedCarts.error.issues });
+		return res.status(500).json({
+			success: false,
+			error: parsedCarts.error.issues,
+		});
 	}
 
 	// const imgURL = parsedCarts.data.map((cart) => {
@@ -66,12 +72,34 @@ cartRouter.get("/", async (req: Request, res: Response) => {
 	// 		return "http://products/images/".concat(cartItem.product.imageUrl as string)
 	// 	})
 	// })
-	return res.json({ result: parsedCarts.data, });
+	return res.json({
+		success: true,
+		result: parsedCarts.data,
+	});
 });
+// no query for a specific cart
 
-cartRouter.post("/:cartId", async (req: Request, res: Response) => {
+// make a new user cart
+cartRouter.post("/", async (req: Request, res: Response<ApiResponse>) => {
 
-	const parsedcarts = await cartInsertSchema.array().safeParseAsync(req.body);
+	// Parse parameters
+	const paramsSchema = z.object({
+		customerId: z.coerce.number(),
+	})
+
+	const parsedParams = await paramsSchema.safeParseAsync(req.params);
+
+	if (!parsedParams.success) {
+		return res.status(400).json({
+			success: false,
+			error: parsedParams.error.issues,
+		});
+	}
+
+	const { customerId } = parsedParams.data
+
+	// Parse body
+	const parsedcarts = await cartInsertSchema.safeParseAsync({ customerId: customerId, ...req.body });
 	if (!parsedcarts.success) {
 		return res.status(400).json({
 			success: false,
@@ -79,86 +107,138 @@ cartRouter.post("/:cartId", async (req: Request, res: Response) => {
 		});
 	}
 
-	try {
-		await db.insert(schema.cart).values(parsedcarts.data);
-	} catch (e: unknown) {
-		if (e instanceof Error) {
-			return res.status(500).json({
-				success: false,
-				error: e.message,
-			});
-		} else {
-			return res.status(500).json({
-				success: false,
-				error: "internal database error",
-			});
-		}
+	// Query
+	const newCartId = await to(db
+		.insert(schema.cart)
+		.values({
+			customerId: parsedcarts.data.customerId,
+			name: parsedcarts.data.name,
+			status: parsedcarts.data.status,
+		})
+		.returning({ id: schema.cart.id })
+	);
+
+	if (!newCartId.success) {
+		return res.status(500).json({
+			success: false,
+			error: newCartId.error.message,
+		});
 	}
 
-	return res.json({ success: true });
+	// Return results
+	return res.json({
+		success: true,
+		result: newCartId.data,
+	});
 });
 
-cartRouter.put("/:id", async (req: Request, res: Response) => {
+// update name and/or status of cart
+cartRouter.put("/:cartId", async (req: Request, res: Response<ApiResponse>) => {
+	// Parse parameters
+	const paramsSchema = z.object({
+		cartId: z.coerce.number(),
+		customerId: z.coerce.number(),
+	})
 
-	const id = await z.coerce.number().safeParseAsync(req.params.id);
-	if (!id.success) {
-		return res.status(400).json({ error: id.error.issues });
+	const parsedParams = await paramsSchema.safeParseAsync(req.params.id);
+
+	if (!parsedParams.success) {
+		return res.status(400).json({
+			success: false,
+			error: parsedParams.error.issues,
+		});
 	}
 
+	const { cartId, customerId } = parsedParams.data
+
+	// Parse body
 	const parsedcarts = await cartUpdateSchema.safeParseAsync(req.body);
 	if (!parsedcarts.success) {
-		return res.status(400).json({ error: parsedcarts.error.issues });
+		return res.status(400).json({
+			success: false,
+			error: parsedcarts.error.issues,
+		});
 	}
 
-	try {
-		await db.update(schema.cart).set(parsedcarts.data).where(eq(schema.cart.id, id.data));
-	} catch (e: unknown) {
-		if (e instanceof Error) {
-			return res.status(500).json({
-				success: false,
-				error: e.message,
-			});
-		} else {
-			return res.status(500).json({
-				success: false,
-				error: "internal database error",
-			});
-		}
+	// Query
+	const newCartId = await to(db
+		.update(schema.cart)
+		.set({
+			name: parsedcarts.data.name,
+			status: parsedcarts.data.status,
+			updatedAt: sql`NOW()`
+		})
+		.where(and(eq(schema.cart.id, cartId), eq(schema.cart.customerId, customerId)))
+		.returning({ id: schema.cart.id })
+	);
+
+	if (!newCartId.success) {
+		return res.status(500).json({
+			success: false,
+			error: newCartId.error.message,
+		});
 	}
 
-	return res.json({ success: true });
+	if (newCartId.data.length === 0) {
+		return res.status(404).json({
+			success: false,
+			error: "cart not found",
+		});
+	}
+
+
+	// Return result
+	return res.json({
+		success: true,
+		result: newCartId.data,
+	});
 });
 
-cartRouter.delete("/:id", async (req: Request, res: Response) => {
-	try {
-		const id = await z.coerce.number().safeParseAsync(req.params.id);
-		if (!id.success) {
-			return res.status(400).json({ error: id.error.issues });
-		}
+// not soft delete
+// delete the whole user cart
+cartRouter.delete("/:cartId", async (req: Request, res: Response<ApiResponse>) => {
 
-		const deletedId = await db
-			.delete(schema.cart)
-			.where(eq(schema.cart.id, id.data))
-			.returning({ deleteId: schema.cart.id });
+	// Parse parameters
+	const paramsSchema = z.object({
+		cartId: z.coerce.number(),
+		customerId: z.coerce.number(),
+	})
 
-		if (deletedId.length === 0) {
-			return res.status(404).json({
-				success: false,
-				error: "cart not found",
-			});
-		}
-		return res.json({ success: true });
-	} catch (e: unknown) {
-		if (e instanceof Error) {
-			return res.status(500).json({
-				success: false,
-				error: e.message,
-			});
-		} else {
-			return res.status(500).json({
-				success: false,
-				error: "internal database error",
-			});
-		}
+	const parsedParams = await paramsSchema.safeParseAsync(req.params.id);
+
+	if (!parsedParams.success) {
+		return res.status(400).json({
+			success: false,
+			error: parsedParams.error.issues,
+		});
 	}
+
+	const { cartId, customerId } = parsedParams.data
+
+	// Query
+	const deletedId = await to(db
+		.delete(schema.cart)
+		.where(and(eq(schema.cart.id, cartId), eq(schema.cart.customerId, customerId)))
+		.returning({ id: schema.cart.id })
+	);
+
+	if (!deletedId.success) {
+		return res.json({
+			success: false,
+			error: deletedId.error.message,
+		});
+	}
+
+	if (deletedId.data.length === 0) {
+		return res.status(404).json({
+			success: false,
+			error: "cart not found",
+		});
+	}
+
+	// Return result
+	return res.json({
+		success: true,
+		result: deletedId.data,
+	});
 });
