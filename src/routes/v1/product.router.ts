@@ -9,7 +9,8 @@ const productRouter = Router();
 // Read
 productRouter.get("/", PC.getProducts);
 productRouter.get("/:id", PC.getProductById);
-productRouter.get("/:id/versions", PC.getProductVersions); // TODO: seed and test api
+productRouter.get("/:id/versions", PC.getProductVersions);
+productRouter.get("/:id/discounts", PC.getProductDiscounts);
 
 // create 
 productRouter.post("/", checkSchema(createProductValidationSchema), PC.createProduct);

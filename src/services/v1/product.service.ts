@@ -1,4 +1,4 @@
-import { NewProduct } from "@src/db/types.ts";
+import { InsertProducts, Product } from "@src/db/types.ts";
 import db from "../../db/db.ts";
 import { products } from "../../db/models/products.ts";
 import { eq } from "drizzle-orm";
@@ -26,7 +26,8 @@ export async function getProducts(params?: Record<string, any>): Promise<Array<O
 }
 
 // TODO: get some similar suggested products
-export async function getProductById(id: number, params?: Record<string, any>): Promise<Object | null> {
+// findFirst function returns undefine if the wanted product does not exist
+export async function getProductById(id: number, params?: Record<string, any>): Promise<Object | undefined> {
 	let withOptions: Record<string, any> = {}
 
 	if (params) {
@@ -43,22 +44,23 @@ export async function getProductById(id: number, params?: Record<string, any>): 
 	const product = await db?.query.products.findFirst({
 		where: eq(products.id, id),
 		with: withOptions,
-	}) || [];
+	});
 
-	if (!product) return null;
-
-	const ratingStats = await getProductRatingStats(id);
-
-	return { ...product, ratingStats };
+	if ( product && 'reviews' in withOptions ) {
+		const ratingStats = await getProductRatingStats(id);
+		return { ...product, ratingStats };
+	} else {
+		return product;
+	}
 }
 
-export async function createProduct(data: NewProduct) {
+export async function createProduct(data: InsertProducts) {
 	console.log(data);
 	const { name, description, categoryId, brandId, attributes } = data;
 	return await db?.insert(products).values({ name, description, categoryId, brandId, attributes });
 }
 
-export async function updateProduct(id: number, data: NewProduct) {
+export async function updateProduct(id: number, data: InsertProducts) {
 	return await db?.update(products).set(data).where(eq(products.id, id));
 }
 
@@ -74,7 +76,6 @@ function applyQueryParams(params: Record<string, any>): Record<string, any> {
 
 	// [____ Brands ____]
 	if ("brand" in params) withOptions.brand = true;
-	// if ("review" in params) withOptions.review = true
 
 	// [____ Reviews ____]
 	let reviewParamValue: any;

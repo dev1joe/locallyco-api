@@ -15,3 +15,7 @@ export * from './productSkus.ts';
 export * from './productImages.ts';
 export * from './reviews.ts';
 export * from './authSchema.ts';
+export * from './discounts.ts';
+export * from './productDiscounts.ts';
+export * from './brandDiscounts.ts';
+export * from './categoryDiscounts.ts';

@@ -1,4 +1,5 @@
-import { pgTable, integer, varchar, numeric, jsonb } from "drizzle-orm/pg-core";
+import { pgTable } from "drizzle-orm/pg-core";
+import { integer, varchar, numeric, jsonb } from "drizzle-orm/pg-core";
 
 import { categories } from "./categories.ts";
 import { brands } from "./brands.ts";

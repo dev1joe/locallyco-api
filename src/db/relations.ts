@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm/relations";
-import { brands, products, categories, addresses, customers, carts, users, orders, payments, promoCodes, shipments, reviews, accounts, cartItems, orderItems, productSkus, sessions, productImages } from "./models/models";
+import { brands, products, categories, addresses, customers, carts, users, orders, payments, promoCodes, shipments, reviews, accounts, cartItems, orderItems, productSkus, sessions, productImages, discounts, productDiscounts, brandDiscounts, categoryDiscounts } from "./models/models";
 
 export const productsRelations = relations(products, ({ one, many }) => ({
 	brand: one(brands, {
@@ -14,6 +14,7 @@ export const productsRelations = relations(products, ({ one, many }) => ({
 	cartItems: many(cartItems),
 	orderItems: many(orderItems),
 	productSkus: many(productSkus),
+	discounts: many(productDiscounts)
 }));
 
 export const brandsRelations = relations(brands, ({ one, many }) => ({
@@ -26,11 +27,13 @@ export const brandsRelations = relations(brands, ({ one, many }) => ({
 		fields: [brands.address],
 		references: [addresses.id]
 	}),
+	discounts: many(brandDiscounts)
 }));
 
 export const categoriesRelations = relations(categories, ({ one, many }) => ({
 	products: many(products),
 	brands: many(brands),
+	discounts: many(categoryDiscounts),
 	category: one(categories, {
 		fields: [categories.parentId],
 		references: [categories.id],
@@ -38,6 +41,45 @@ export const categoriesRelations = relations(categories, ({ one, many }) => ({
 	}),
 	categories: many(categories, {
 		relationName: "categories_parentId_categories_id"
+	}),
+}));
+
+export const discountsRelations = relations(discounts, ({ many }) => ({
+	products: many(productDiscounts),
+	brands: many(brandDiscounts),
+	categories: many(categoryDiscounts),
+}))
+
+export const productDiscountsRelations = relations(productDiscounts, ({ one }) => ({
+	discount: one(discounts, {
+		fields: [productDiscounts.discountId],
+		references: [discounts.id] 
+	}),
+	product: one(products, {
+		fields: [productDiscounts.productId],
+		references: [products.id] 
+	}),
+}));
+
+export const brandDiscountsRelations = relations(brandDiscounts, ({ one }) => ({
+	discount: one(discounts, {
+		fields: [brandDiscounts.discountId],
+		references: [discounts.id] 
+	}),
+	brand: one(brands, {
+		fields: [brandDiscounts.brandId],
+		references: [brands.id] 
+	}),
+}));
+
+export const categoryDiscountsRelations = relations(categoryDiscounts, ({ one }) => ({
+	discount: one(discounts, {
+		fields: [categoryDiscounts.discountId],
+		references: [discounts.id] 
+	}),
+	category: one(categories, {
+		fields: [categoryDiscounts.categoryId],
+		references: [categories.id] 
 	}),
 }));
 
