@@ -7,6 +7,8 @@ import { auth } from "src/lib/auth"
 import cors from "cors";
 import { brandRouter } from "./controllers/v1/brand";
 import { cartRouter } from "./controllers/v1/cart";
+import discountRouter from "./routes/v1/discount.router";
+import categoryRouter from "./routes/v1/category.router";
 
 // TODO: use cors, compression
 const app = express();
@@ -28,6 +30,8 @@ v1.use("/products", productRouter);
 // v1.use("/sku", skuRouter);
 v1.use("/brands", brandRouter);
 v1.use("/customers/:customerId/carts", cartRouter);
+v1.use("/discounts", discountRouter);
+v1.use("/categories", categoryRouter);
 
 app.use("/api/v1", v1);
 

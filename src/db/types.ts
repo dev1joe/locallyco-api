@@ -17,7 +17,17 @@ import { productImages } from './models/productImages.ts';
 import { reviews } from './models/reviews.ts';
 import { discounts } from "./models/discounts";
 import { productDiscounts } from "./models/productDiscounts.ts";
+import { categoryDiscounts } from "./models/categoryDiscounts.ts";
 
+export type Category = InferSelectModel<typeof categories>;
+export type InsertCategory = InferInsertModel<typeof categories>;
+
+export type CategoryDiscount = InferSelectModel<typeof categoryDiscounts>
+export type InsertCategoryDiscounts = InferInsertModel<typeof categoryDiscounts>
+
+export type InsertBrands = InferInsertModel<typeof brands>;
+
+export type InsertDiscounts = InferInsertModel<typeof discounts>;
 
 export type Product = InferSelectModel<typeof products>;
 export type InsertProducts = InferInsertModel<typeof products>;
@@ -28,11 +38,8 @@ export type InsertProductSku = InferInsertModel<typeof productSkus>;
 export type ProductDiscount = InferSelectModel<typeof productDiscounts>
 export type InsertProductDiscount = InferInsertModel<typeof productDiscounts>
 
-export type InsertDiscounts = InferInsertModel<typeof discounts>;
 
 export type InsertAddress = InferInsertModel<typeof addresses>;
-export type InsertCategory = InferInsertModel<typeof categories>;
-export type InsertBrands = InferInsertModel<typeof brands>;
 export type InsertCustomer = InferInsertModel<typeof customers>;
 export type InsertPromo = InferInsertModel<typeof promoCodes>;
 export type InsertPayment = InferInsertModel<typeof payments>;

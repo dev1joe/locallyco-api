@@ -14,7 +14,8 @@ import db from './db.ts';
 import {
 	InsertAddress, InsertCategory, InsertPromo, InsertCustomer, InsertBrands, InsertProducts, InsertPayment,
 	InsertProductSku, InsertReview, InsertOrderItem, InsertProductImages, InsertReturnItem, InsertCart,
-	InsertCartItem, InsertOrder, InsertShipment, InsertDiscounts, InsertProductDiscount
+	InsertCartItem, InsertOrder, InsertShipment, InsertDiscounts, InsertProductDiscount,
+	InsertCategoryDiscounts
 } from './types.ts';
 
 import { products } from './models/products.ts';
@@ -35,6 +36,7 @@ import { productImages } from './models/productImages.ts';
 import { reviews } from './models/reviews.ts';
 import { productDiscounts } from './models/productDiscounts.ts';
 import { discounts } from './models/discounts.ts';
+import { categoryDiscounts } from './models/categoryDiscounts.ts';
 
 // --- Define your seed data here ---
 // This data is structured to respect the foreign key dependencies of your schema.
@@ -46,6 +48,7 @@ type SeedData = {
 	promoCodes: InsertPromo[];
 	customer: InsertCustomer[];
 	brands: InsertBrands[];
+	categoryDiscounts: InsertCategoryDiscounts[];
 	products: InsertProducts[];
 	payments: InsertPayment[];
 	productSkus: InsertProductSku[];
@@ -69,10 +72,13 @@ const seedData: SeedData = {
 	category: [
 		{ name: 'Electronics', description: 'Gadgets and electronic devices.', attributes: { 'type': 'electronic' } },
 		{ name: 'Apparel', description: 'Clothing and accessories.', attributes: { 'type': 'apparel' } },
+		{ name: 'Winter Collection', description: 'Stylish Winter', attributes: { 'type': 'apparel' } },
+		{ name: 'Summer Collection', description: 'Stylish Winter', attributes: { 'type': 'apparel' } },
 	] as InsertCategory[],
 	discounts: [
 		{ name: 'save30', type: 'percentage', value: 30, isActive: true, appliesToType: 'all', minPurchaseAmountCents: 100000, startDate: new Date('2025-9-1'), endDate: new Date('2026-2-30') },
-		{ name: 'winter sale', type: 'percentage', value: 10, isActive: true, appliesToType: 'category', minPurchaseAmountCents: 0, startDate: new Date('2025-9-24'), endDate: new Date('2025-12-30') }
+		{ name: 'winter sale', type: 'percentage', value: 10, isActive: true, appliesToType: 'category', minPurchaseAmountCents: 0, startDate: new Date('2025-10-1'), endDate: new Date('2026-2-30') },
+		{ name: 'summer sale', type: 'percentage', value: 10, isActive: true, appliesToType: 'category', minPurchaseAmountCents: 0, startDate: new Date('2026-5-1'), endDate: new Date('2026-10-1') },
 	] as InsertDiscounts[],
 
 	// Level 2: Depends on Level 1 (addresses, category, promoCodes)
@@ -89,10 +95,15 @@ const seedData: SeedData = {
 		{ name: 'Tech Innovations', description: 'Cutting-edge electronics.', },
 		{ name: 'Urban Threads', description: 'Modern and sustainable apparel.', },
 	] as InsertBrands[],
+	categoryDiscounts: [
+		{ categoryId: 2, discountId: 1},
+		{ categoryId: 3, discountId: 2},
+	] as InsertCategoryDiscounts[],
 
 	// Level 3: Depends on Level 2 (brands, customer, etc.)
 	products: [
 		{
+			categoryId: 0,
 			name: 'Ultra HD Monitor',
 			imageUrl: 'https://prd.place/400?id=5&p=40',
 			description: 'A monitor with stunning clarity.',
@@ -101,6 +112,7 @@ const seedData: SeedData = {
 			attributes: [{ "name": "size", "type": "integer", "values": ["27", "32"] }]
 		},
 		{
+			categoryId: 2,
 			name: 'Cotton Hoodie',
 			imageUrl: 'https://placehold.co/600x400/fff/000',
 			description: 'A comfortable and stylish hoodie.',
@@ -130,6 +142,7 @@ const seedData: SeedData = {
 			]
 		},
 		{
+			categoryId: 2,
 			name: 'Awesome Hoodie',
 			// imageUrl: 'https://placehold.co/600x400/fff/000',
 			description: 'A comfortable and stylish hoodie.',
@@ -137,8 +150,7 @@ const seedData: SeedData = {
 		}
 	] as InsertProducts[],
 	payments: [
-		{ promoId: 1, priceCent: 12000, type: 'Credit Card', status: 1 },
-		{ promoId: 2, priceCent: 8000, type: 'PayPal', status: 1 },
+		{ promoId: 0, priceCent: 12000, type: 'Credit Card', status: 1 },
 	] as InsertPayment[],
 
 	// Level 4: Depends on Products, Payment, Customer, etc.
@@ -270,7 +282,10 @@ async function seedDatabase() {
 			const seededBrands = seedData.brands.map(b => ({ ...b, categoryId: categoriesResult[0].id, addresses: addressesResult[0].id }));
 			const brandsResult = await tx.insert(brands).values(seededBrands).returning({ id: brands.id });
 
-			const seededProducts = seedData.products.map(p => ({ ...p, categoryId: categoriesResult[0].id, brandId: brandsResult[0].id }));
+			const seedCategoryDiscounts = seedData.categoryDiscounts.map(d => ({ ...d, categoryId: categoriesResult[d.categoryId].id, discountId: discountsResult[d.discountId].id }));
+			await tx.insert(categoryDiscounts).values(seedCategoryDiscounts);
+
+			const seededProducts = seedData.products.map(p => ({ ...p, categoryId: categoriesResult[p.categoryId].id, brandId: brandsResult[0].id }));
 			const productsResult = await tx.insert(products).values(seededProducts).returning({ id: products.id });
 
 			const seededPayments = seedData.payments.map(p => ({ ...p, promoId: promosResult[0].id }));
@@ -280,7 +295,7 @@ async function seedDatabase() {
 			const ordersResult = await tx.insert(orders).values(seededOrders).returning({ id: orders.id });
 
 			const seededCarts = seedData.carts.map(c => ({ ...c, customerId: customersResult[0].id }));
-			const cartsResult = await tx.insert(carts).values(seededCarts).returning({ id: carts.id });
+			await tx.insert(carts).values(seededCarts).returning({ id: carts.id });
 
 			// const seededCartsItem = seedData.cartItems.map((c, index) => (
 			// 	{ ...c, cartId: cartsResult[index].id }

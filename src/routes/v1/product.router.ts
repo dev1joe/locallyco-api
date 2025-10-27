@@ -3,6 +3,8 @@ import * as PC from "../../controllers/v1/product.controller.ts";
 import { checkSchema } from "express-validator";
 import createProductValidationSchema from "../../trash/createProductValidationSchema.ts";
 
+// TODO: remove express-validator
+
 //    /api/v1/products
 const productRouter = Router();
 

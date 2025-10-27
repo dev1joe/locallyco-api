@@ -7,7 +7,7 @@ import { timestamps } from "../common/columns/timestamps.ts";
 
 export const products = pgTable("products", {
 	id: integer().primaryKey().generatedAlwaysAsIdentity(),
-	categoryId: integer().references(() => categories.id, { onDelete: "cascade" }), // TODO: what to do on update ??
+	categoryId: integer().references(() => categories.id, { onDelete: "cascade" }).notNull(), // TODO: what to do on update ??
 	brandId: integer().references(() => brands.id, { onDelete: "cascade" }),
 	name: varchar({ length: 256 }),
 	description: varchar({ length: 1000 }),

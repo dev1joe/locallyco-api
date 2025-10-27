@@ -4,7 +4,6 @@ import { products } from "../../db/models/products.ts";
 import { eq } from "drizzle-orm";
 import { getProductRatingStats } from "./reviews.service.ts";
 
-// TODO: pull in reviews data (all and single) including total rating, number of reviews, first 5 reviews, rating distribution
 // TODO: add product features varchar array column and pull it in (all and single)
 
 // TODO: handle filtering (all products)

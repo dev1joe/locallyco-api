@@ -10,8 +10,8 @@ export async function getProducts(req: Request, res: Response) {
         console.log("request query params", queryParams)
         const products = await PS.getProducts(queryParams);
 
-        if (!products) {
-            return res.status(500).json({ error: "Failed to retrieve products" });
+        if (!products || products.length < 1) {
+            return res.status(404).json({ message: "No products found" });
         }
 
         return res.json({ "result": products });
@@ -78,9 +78,9 @@ export async function getProductDiscounts(req: Request, res: Response) {
             return res.status(404).json({ error: "Product not found" });
         }
 
-        const discounts = await DS.getDiscountsForProduct(id);
+        const discounts = await DS.getProductDiscounts(id);
 
-        if (!discounts) {
+        if (!discounts || discounts.length < 1) {
             return res.status(404).json({ error: "Product discounts not found" });
         }
 
