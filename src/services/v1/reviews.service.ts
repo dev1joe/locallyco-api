@@ -18,7 +18,12 @@ export async function getProductRatingStats(productId: number) {
         const row = result.rows.find((r) => r.rate === rate);
         if (!row) return { rate, percent: 0 };
         
-        const percent = (row.count && total > 0) ? (Number(row.count) / total) * 100 : 0;
+        let percent = 0;
+        if (row.count && total > 0) {
+            const calcResult = (Number(row.count) / total) * 100;
+            
+            percent = (rate === 5)? Math.ceil(calcResult) : Math.floor(calcResult);
+        } 
         return { rate, percent };
     });
 

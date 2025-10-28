@@ -91,6 +91,29 @@ export async function getProductDiscounts(req: Request, res: Response) {
     }
 }
 
+export async function getRelevantProducts(req: Request, res: Response) {
+    const limit = parseInt(req.query.limit as string) ?? 5;
+    const score = parseInt(req.query.score as string) ?? 2;
+    
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+        return res.status(400).json({ error: "Invalid product ID"});
+    }
+
+    try {
+        const products = await PS.getRelevantProducts(id, score, limit);
+
+        if (!products || products.length < 1) {
+            return res.status(404).json({ error: "No relevant products found"});
+        }
+
+        return res.json({ result: products });
+    } catch (e) {
+        console.log(e);
+        return res.status(500).json({ error: "Failed to retrieve relevant products"});
+    }
+}
+
 export async function createProduct(req: Request, res: Response) {
     try {
         const valResult = validationResult(req);

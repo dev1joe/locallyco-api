@@ -3,36 +3,54 @@ import { discounts } from "@src/db/models/discounts";
 import { productDiscounts } from "@src/db/models/productDiscounts";
 import { brandDiscounts } from "@src/db/models/brandDiscounts";
 import { categoryDiscounts } from "@src/db/models/categoryDiscounts";
-import { eq } from "drizzle-orm";
+import { eq, between, and } from "drizzle-orm";
+import { Discount } from "@src/db/types";
 
 // TODO: perform only one query instead of three
 export async function getDiscounts(params?: Record<string, any>): Promise<Array<Object> | null> {
-    let discounts: Array<Object> = [];
+    let discounts: Array<Discount> = [];
     
     if (params) {
         const productId = (params.product)? parseInt(params.product) : null;
+        const categoryId = (params.category)? parseInt(params.category) : null;
+        const brandId = (params.brand)? parseInt(params.brand) : null;
 
         if (productId && !isNaN(productId)) {
-            console.log("finding a discount for product...", params.product);
+            console.log("finding a discount for product...", productId);
             const productDiscounts = await getProductDiscounts(productId);
             discounts.push(...productDiscounts);
         }
 
-        if ("brand" in params && !isNaN(parseInt(params.brand))) {
-            console.log("finding a discount for brand...", params.brand);
+        if (brandId && !isNaN(brandId)) {
+            console.log("finding a discount for brand...", brandId);
             const brandDiscounts = await getBrandDiscounts(params.brand);
             discounts.push(...brandDiscounts);
         }
 
-        if ("category" in params && !isNaN(parseInt(params.category))) {
-            console.log("finding a discount for category...", params.category);
+        if (categoryId && !isNaN(categoryId)) {
+            console.log("finding a discount for category...", categoryId);
             const categoryDiscounts = await getCategoryDiscounts(params.category);
             discounts.push(...categoryDiscounts);            
         }
     } else {
         discounts = await db?.query.discounts.findMany() || [];
     }
-    return discounts;
+
+    // only include active discounts
+    const currentDate = new Date();
+    const filteredDiscounts = discounts?.filter((dis) => {
+        if (dis.startDate && dis.endDate) {
+            if ((dis.startDate <= currentDate) && (dis.endDate >= currentDate)) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return true;
+        }
+    });
+
+    return filteredDiscounts;
 }
 
 // findFirst returns undefined if the wanted discount does not exist
@@ -40,27 +58,6 @@ export async function getDiscountById(id: number): Promise<Object | undefined> {
     return await db?.query.discounts.findFirst({
         where: eq(discounts.id, id)
     });
-}
-
-export async function getDiscountsForEntities(productId?: number, brandId?: number, categoryId?: number) {
-    const discounts: Array<Object> = [];
-
-    if (productId) {
-        const productDiscounts = await getProductDiscounts(productId);
-        discounts.push(...productDiscounts);
-    }
-
-    if (brandId) {
-        const brandDiscounts = await getBrandDiscounts(brandId);
-        discounts.push(...brandDiscounts);
-    }
-
-    if (categoryId) {
-        const categoryDiscounts = await getCategoryDiscounts(categoryId);
-        discounts.push(...categoryDiscounts);
-    }
-
-    return discounts;
 }
 
 export async function getProductDiscounts(productId: number) {

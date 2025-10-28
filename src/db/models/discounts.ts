@@ -11,7 +11,7 @@ import { timestamps } from "../common/columns/timestamps.ts";
 export const discounts = pgTable("discounts", {
     id: integer().primaryKey().generatedAlwaysAsIdentity(),
     name: varchar({ length: 256 }),
-    type: varchar({ length: 100 }).notNull(), // e.g., percentage, fixed_amount
+    type: varchar({ length: 100 }).notNull(), // e.g., percentage, amount
     value: integer().notNull(), // e.g., 10 for 10% or $10
     startDate: timestamp("start_date"),
     endDate: timestamp("end_date"),

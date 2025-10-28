@@ -27,6 +27,7 @@ export type InsertCategoryDiscounts = InferInsertModel<typeof categoryDiscounts>
 
 export type InsertBrands = InferInsertModel<typeof brands>;
 
+export type Discount = InferSelectModel<typeof discounts>;
 export type InsertDiscounts = InferInsertModel<typeof discounts>;
 
 export type Product = InferSelectModel<typeof products>;

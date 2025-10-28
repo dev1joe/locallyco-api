@@ -13,6 +13,7 @@ productRouter.get("/", PC.getProducts);
 productRouter.get("/:id", PC.getProductById);
 productRouter.get("/:id/versions", PC.getProductVersions);
 productRouter.get("/:id/discounts", PC.getProductDiscounts);
+productRouter.get("/:id/relevant", PC.getRelevantProducts);
 
 // create 
 productRouter.post("/", checkSchema(createProductValidationSchema), PC.createProduct);

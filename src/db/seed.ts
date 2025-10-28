@@ -74,11 +74,14 @@ const seedData: SeedData = {
 		{ name: 'Apparel', description: 'Clothing and accessories.', attributes: { 'type': 'apparel' } },
 		{ name: 'Winter Collection', description: 'Stylish Winter', attributes: { 'type': 'apparel' } },
 		{ name: 'Summer Collection', description: 'Stylish Winter', attributes: { 'type': 'apparel' } },
+		{ name: 'Shoes', description: 'Some Nice Shoes', attributes: { 'type': 'apparel' } },
+		{ name: 'random category', description: 'Just a random category', attributes: { 'type': 'apparel' } },
 	] as InsertCategory[],
 	discounts: [
 		{ name: 'save30', type: 'percentage', value: 30, isActive: true, appliesToType: 'all', minPurchaseAmountCents: 100000, startDate: new Date('2025-9-1'), endDate: new Date('2026-2-30') },
 		{ name: 'winter sale', type: 'percentage', value: 10, isActive: true, appliesToType: 'category', minPurchaseAmountCents: 0, startDate: new Date('2025-10-1'), endDate: new Date('2026-2-30') },
 		{ name: 'summer sale', type: 'percentage', value: 10, isActive: true, appliesToType: 'category', minPurchaseAmountCents: 0, startDate: new Date('2026-5-1'), endDate: new Date('2026-10-1') },
+		{ name: 'random sale', type: 'amount', value: 5000, isActive: true, appliesToType: 'category', minPurchaseAmountCents: 0, startDate: new Date('2025-5-1'), endDate: new Date('2027-10-1') }, // fixed amount scenario
 	] as InsertDiscounts[],
 
 	// Level 2: Depends on Level 1 (addresses, category, promoCodes)
@@ -109,7 +112,7 @@ const seedData: SeedData = {
 			description: 'A monitor with stunning clarity.',
 			reviewCount: 6,
 			averageRating: "3.83",
-			attributes: [{ "name": "size", "type": "integer", "values": ["27", "32"] }]
+			attributes: [{ "name": "size", "type": "integer", "values": ["27"] }] // single attribute value scenario
 		},
 		{
 			categoryId: 2,
@@ -144,10 +147,46 @@ const seedData: SeedData = {
 		{
 			categoryId: 2,
 			name: 'Awesome Hoodie',
-			// imageUrl: 'https://placehold.co/600x400/fff/000',
+			imageUrl: 'https://placehold.co/600x400/fff/000',
 			description: 'A comfortable and stylish hoodie.',
 			attributes: []
-		}
+		},
+		{ // no discount scenario & no review scenario
+			categoryId: 4,
+			name: 'Amazing Air Jordan Shoes',
+			imageUrl: 'https://placehold.co/600x400/fff/000',
+			description: 'All day comfort with the new Air Jordans',
+			attributes: [
+				{
+					"name": "size",
+					"type": "string",
+					"values": [
+						"40",
+						"42",
+						"44",
+						"46",
+						"48",
+					]
+				},
+				{
+					"name": "color",
+					"type": "string",
+					"values": [
+						"#f00",
+						"#00f",
+					]
+				}
+			]
+		},
+		{
+			categoryId: 5,
+			name: 'Random Product',
+			imageUrl: 'https://farm4.staticflickr.com/3049/2327691528_f060ee2d1f.jpg',
+			description: 'Just a random product',
+			reviewCount: 6,
+			averageRating: "3.83",
+			attributes: [{ "name": "size", "type": "integer", "values": ["random"] }] // single attribute value scenario
+		},
 	] as InsertProducts[],
 	payments: [
 		{ promoId: 0, priceCent: 12000, type: 'Credit Card', status: 1 },
@@ -159,14 +198,14 @@ const seedData: SeedData = {
 		{ productId: 0, skuCode: 'MONITOR-UHD-GRAY', attributes: { 'size': '27' }, quantity: 50, priceCent: 35000, images: ['https://prd.place/400?id=5&p=40'] },
 
 		// Hoodie SKUs
-		{ productId: 1, skuCode: 'HOODIE-COT-S-BLK', attributes: { 'color': '#000', 'size': 'S' }, quantity: 211, priceCent: 5500, images: ['https://placehold.co/600x400/fff/000?text=T-shirt'] },
-		{ productId: 1, skuCode: 'HOODIE-COT-M-BLK', attributes: { 'color': '#000', 'size': 'M' }, quantity: 107, priceCent: 5500, images: ['https://placehold.co/600x400/fff/000?text=T-shirt'] },
-		{ productId: 1, skuCode: 'HOODIE-COT-L-BLK', attributes: { 'color': '#000', 'size': 'L' }, quantity: 112, priceCent: 5500, images: ['https://placehold.co/600x400/fff/000?text=T-shirt'] },
-		{ productId: 1, skuCode: 'HOODIE-COT-XL-BLK', attributes: { 'color': '#000', 'size': 'XL' }, quantity: 112, priceCent: 5500, images: ['https://placehold.co/600x400/fff/000?text=T-shirt'] },
+		{ productId: 1, skuCode: 'HOODIE-COT-S-BLK', attributes: { 'color': '#000', 'size': 'S' }, quantity: 80, priceCent: 5500, images: ['https://placehold.co/600x400/fff/000?text=T-shirt'] },
+		{ productId: 1, skuCode: 'HOODIE-COT-M-BLK', attributes: { 'color': '#000', 'size': 'M' }, quantity: 54, priceCent: 5500, images: ['https://placehold.co/600x400/fff/000?text=T-shirt'] },
+		{ productId: 1, skuCode: 'HOODIE-COT-L-BLK', attributes: { 'color': '#000', 'size': 'L' }, quantity: 21, priceCent: 5500, images: ['https://placehold.co/600x400/fff/000?text=T-shirt'] },
+		{ productId: 1, skuCode: 'HOODIE-COT-XL-BLK', attributes: { 'color': '#000', 'size': 'XL' }, quantity: 12, priceCent: 5500, images: ['https://placehold.co/600x400/fff/000?text=T-shirt'] },
 		{ productId: 1, skuCode: 'HOODIE-COT-S-RED', attributes: { 'color': '#f00', 'size': 'S' }, quantity: 211, priceCent: 5500, images: ['https://placehold.co/600x400/fff/f00?text=T-shirt'] },
 		{ productId: 1, skuCode: 'HOODIE-COT-M-RED', attributes: { 'color': '#f00', 'size': 'M' }, quantity: 107, priceCent: 5500, images: ['https://placehold.co/600x400/fff/f00?text=T-shirt'] },
-		{ productId: 1, skuCode: 'HOODIE-COT-L-RED', attributes: { 'color': '#f00', 'size': 'L' }, quantity: 112, priceCent: 5500, images: ['https://placehold.co/600x400/fff/f00?text=T-shirt'] },
-		{ productId: 1, skuCode: 'HOODIE-COT-XL-RED', attributes: { 'color': '#f00', 'size': 'XL' }, quantity: 112, priceCent: 5500, images: ['https://placehold.co/600x400/fff/f00?text=T-shirt'] },
+		{ productId: 1, skuCode: 'HOODIE-COT-L-RED', attributes: { 'color': '#f00', 'size': 'L' }, quantity: 13, priceCent: 5500, images: ['https://placehold.co/600x400/fff/f00?text=T-shirt'] },
+		{ productId: 1, skuCode: 'HOODIE-COT-XL-RED', attributes: { 'color': '#f00', 'size': 'XL' }, quantity: 0, priceCent: 5500, images: ['https://placehold.co/600x400/fff/f00?text=T-shirt'] },
 		{ productId: 1, skuCode: 'HOODIE-COT-S-GRN', attributes: { 'color': '#0f0', 'size': 'S' }, quantity: 211, priceCent: 5500, images: ['https://placehold.co/600x400/fff/0f0?text=T-shirt'] },
 		{ productId: 1, skuCode: 'HOODIE-COT-M-GRN', attributes: { 'color': '#0f0', 'size': 'M' }, quantity: 107, priceCent: 5500, images: ['https://placehold.co/600x400/fff/0f0?text=T-shirt'] },
 		{ productId: 1, skuCode: 'HOODIE-COT-L-GRN', attributes: { 'color': '#0f0', 'size': 'L' }, quantity: 112, priceCent: 5500, images: ['https://placehold.co/600x400/fff/0f0?text=T-shirt'] },
@@ -175,9 +214,32 @@ const seedData: SeedData = {
 		{ productId: 1, skuCode: 'HOODIE-COT-M-BLU', attributes: { 'color': '#00f', 'size': 'M' }, quantity: 107, priceCent: 5500, images: ['https://placehold.co/600x400/fff/00f?text=T-shirt'] },
 		{ productId: 1, skuCode: 'HOODIE-COT-L-BLU', attributes: { 'color': '#00f', 'size': 'L' }, quantity: 112, priceCent: 5500, images: ['https://placehold.co/600x400/fff/00f?text=T-shirt'] },
 		{ productId: 1, skuCode: 'HOODIE-COT-XL-BLU', attributes: { 'color': '#00f', 'size': 'XL' }, quantity: 112, priceCent: 5500, images: ['https://placehold.co/600x400/fff/00f?text=T-shirt'] },
+
+		// Air Jordans SKUs
+		// different price per SKU scenario
+		// SKU not in stock scenario
+		{ productId: 3, skuCode: 'JR-40-blu', attributes: { 'color': '#00f', 'size': '40' }, quantity: 19, priceCent: 1500000, images: ['https://placehold.co/600x400/fff/00f?text=Air-Jordans'] },
+		{ productId: 3, skuCode: 'JR-42-blu', attributes: { 'color': '#00f', 'size': '42' }, quantity: 5, priceCent: 1500000, images: ['https://placehold.co/600x400/fff/00f?text=Air-Jordans'] },
+		{ productId: 3, skuCode: 'JR-44-blu', attributes: { 'color': '#00f', 'size': '44' }, quantity: 0, priceCent: 1500000, images: ['https://placehold.co/600x400/fff/00f?text=Air-Jordans'] },
+		{ productId: 3, skuCode: 'JR-46-blu', attributes: { 'color': '#00f', 'size': '46' }, quantity: 0, priceCent: 1500000, images: ['https://placehold.co/600x400/fff/00f?text=Air-Jordans'] },
+		{ productId: 3, skuCode: 'JR-48-blu', attributes: { 'color': '#00f', 'size': '48' }, quantity: 10, priceCent: 1500000, images: ['https://placehold.co/600x400/fff/00f?text=Air-Jordans'] },
+		{ productId: 3, skuCode: 'JR-40-red', attributes: { 'color': '#f00', 'size': '40' }, quantity: 22, priceCent: 1800000, images: ['https://placehold.co/600x400/fff/f00?text=Air-Jordans'] },
+		{ productId: 3, skuCode: 'JR-42-red', attributes: { 'color': '#f00', 'size': '42' }, quantity: 1, priceCent: 1800000, images: ['https://placehold.co/600x400/fff/f00?text=Air-Jordans'] },
+		{ productId: 3, skuCode: 'JR-44-red', attributes: { 'color': '#f00', 'size': '44' }, quantity: 0, priceCent: 1800000, images: ['https://placehold.co/600x400/fff/f00?text=Air-Jordans'] },
+		{ productId: 3, skuCode: 'JR-46-red', attributes: { 'color': '#f00', 'size': '46' }, quantity: 4, priceCent: 1800000, images: ['https://placehold.co/600x400/fff/f00?text=Air-Jordans'] },
+		{ productId: 3, skuCode: 'JR-48-red', attributes: { 'color': '#f00', 'size': '48' }, quantity: 9, priceCent: 1800000, images: ['https://placehold.co/600x400/fff/f00?text=Air-Jordans'] },
+		{ productId: 3, skuCode: 'JR-40-blk', attributes: { 'color': '#000', 'size': '40' }, quantity: 22, priceCent: 1500000, images: ['https://placehold.co/600x400/fff/000?text=Air-Jordans'] },
+		{ productId: 3, skuCode: 'JR-42-blk', attributes: { 'color': '#000', 'size': '42' }, quantity: 1, priceCent: 1500000, images: ['https://placehold.co/600x400/fff/000?text=Air-Jordans'] },
+		{ productId: 3, skuCode: 'JR-44-blk', attributes: { 'color': '#000', 'size': '44' }, quantity: 0, priceCent: 1500000, images: ['https://placehold.co/600x400/fff/000?text=Air-Jordans'] },
+		{ productId: 3, skuCode: 'JR-46-blk', attributes: { 'color': '#000', 'size': '46' }, quantity: 4, priceCent: 1500000, images: ['https://placehold.co/600x400/fff/000?text=Air-Jordans'] },
+		{ productId: 3, skuCode: 'JR-48-blk', attributes: { 'color': '#000', 'size': '48' }, quantity: 9, priceCent: 1500000, images: ['https://placehold.co/600x400/fff/000?text=Air-Jordans'] },
+
+		// Random Product SKUs
+		{ productId: 4, skuCode: 'rand', attributes: { 'size': 'random' }, quantity: 9, priceCent: 10000, images: ['https://placehold.co/600x400/fff/000?text=Random-Product'] },
 	] as InsertProductSku[],
 	productDiscounts: [
-		{ discountId: 1, productId: 1 }
+		{ discountId: 0, productId: 0 },
+		{ discountId: 3, productId: 4},
 	] as InsertProductDiscount[],
 	review: [
 		// monitor reviews
@@ -197,6 +259,9 @@ const seedData: SeedData = {
 		{ customerId: 2, productId: 1, rate: 4, comment: 'Nice Hoodie, shipped quickly!' },
 		{ customerId: 0, productId: 1, rate: 4, comment: 'Good Hoodie' },
 		{ customerId: 0, productId: 1, rate: 2, comment: `Did't like the material, there are better materials out in the market.` },
+
+		// Air Jordans reviews
+		// no reviews scenario
 	] as InsertReview[],
 
 	// These arrays were missing; add minimal valid entries matching the DB models
