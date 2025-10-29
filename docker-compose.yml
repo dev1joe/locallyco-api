@@ -1,0 +1,46 @@
+# define docker.compose version ?
+
+services:
+  frontend:
+    profiles:
+      - frontend
+    container_name: frontend.ozyra
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile # dockerfile is searched relative to the context path
+    expose:
+      - 3000
+    ports:
+    - 3000:3000 # HOST:CONTAINER
+
+  backend:
+    container_name: backend.ozyra
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    expose:
+    - 8888
+    ports:
+      - 8888:8888 # HOST:CONTAINER
+    env_file:
+      - .env
+    working_dir: /app
+    volumes:
+    - .:/app
+    depends_on:
+    - database
+  
+  database:
+    container_name: database.ozyra
+    image: postgres:17-alpine
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - ozyra_postgres_data:/var/lib/postgresql/data
+
+volumes:
+  ozyra_postgres_data:
