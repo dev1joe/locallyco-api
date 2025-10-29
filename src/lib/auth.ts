@@ -1,7 +1,7 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import db from "../db/db.ts";
-import { openAPI } from "better-auth/plugins";
+import { openAPI, admin } from "better-auth/plugins";
 import { config } from "../../config/config.ts";
 
 export const auth = betterAuth({
@@ -10,9 +10,10 @@ export const auth = betterAuth({
 	}),
 	telemetry: { enabled: false },
 
-	// plugins: [
-	// 	openAPI(),
-	// ],
+	plugins: [
+		// openAPI(),
+		admin(),
+	],
 
 	// trustedOrigins: [
 	// 	config.frontEndURL,

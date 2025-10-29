@@ -13,23 +13,23 @@ import { to } from "src/utils/to"
 
 export const brandRouter = Router();
 
-brandRouter.get("/", async (req: Request, res: Response) => {
+// brandRouter.get("/", async (req: Request, res: Response) => {
+//
+// 	const rawBrands = await to(db.select().from(schema.brands));
+// 	if (!rawBrands.success) {
+// 		return res.status(500).json({ error: rawBrands.error.message });
+// 	}
+//
+// 	const parsedBrands = await brandSelectSchema.array().safeParseAsync(rawBrands);
+//
+// 	if (!parsedBrands.success) {
+// 		return res.status(500).json({ error: parsedBrands.error.message });
+// 	}
+//
+// 	return res.json({ "result": parsedBrands.data });
+// });
 
-	const rawBrands = await to(db.select().from(schema.brands));
-	if (!rawBrands.success) {
-		return res.status(500).json({ error: rawBrands.error.message });
-	}
-
-	const parsedBrands = await brandSelectSchema.array().safeParseAsync(rawBrands);
-
-	if (!parsedBrands.success) {
-		return res.status(500).json({ error: parsedBrands.error.message });
-	}
-
-	return res.json({ "result": parsedBrands.data });
-});
-
-brandRouter.get("/:id", async (req: Request, res: Response) => {
+brandRouter.get("/:brandId", async (req: Request, res: Response) => {
 	const id = await z.coerce.number().safeParseAsync(req.params.id);
 	if (!id.success) {
 		return res.status(500).json({ error: id.error.message });
@@ -48,6 +48,7 @@ brandRouter.get("/:id", async (req: Request, res: Response) => {
 	return res.json({ "result": parsedBrands.data });
 });
 
+// see better-auth docs to get user
 brandRouter.post("/", async (req: Request, res: Response) => {
 
 	const parsedBrands = await brandInsertSchema.array().safeParseAsync(req.body);
@@ -77,7 +78,7 @@ brandRouter.post("/", async (req: Request, res: Response) => {
 	return res.json({ success: true });
 });
 
-brandRouter.put("/:id", async (req: Request, res: Response) => {
+brandRouter.put("/:brandId", async (req: Request, res: Response) => {
 
 	const id = await z.coerce.number().safeParseAsync(req.params.id);
 	if (!id.success) {
@@ -108,7 +109,7 @@ brandRouter.put("/:id", async (req: Request, res: Response) => {
 	return res.json({ success: true });
 });
 
-brandRouter.delete("/:id", async (req: Request, res: Response) => {
+brandRouter.delete("/:brandId", async (req: Request, res: Response) => {
 	try {
 		const id = await z.coerce.number().safeParseAsync(req.params.id);
 		if (!id.success) {

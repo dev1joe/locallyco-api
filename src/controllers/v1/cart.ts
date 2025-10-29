@@ -22,7 +22,10 @@ cartRouter.use("/:cartId", cartItemRouter);
 // Get all user carts with cart items
 cartRouter.get("/", async (req: Request, res: Response<ApiResponse>) => {
 
-	const paramsSchema = z.object({ customerId: z.coerce.number() })
+	// Parse parameters
+	const paramsSchema = z.object({
+		customerId: z.coerce.number(),
+	})
 
 	const parsedParams = await paramsSchema.safeParseAsync(req.params)
 	if (!parsedParams.success) {
@@ -32,8 +35,9 @@ cartRouter.get("/", async (req: Request, res: Response<ApiResponse>) => {
 		});
 	}
 
-	const customerId = parsedParams.data.customerId
+	const { customerId } = parsedParams.data
 
+	// Query
 	const rawCarts = await to(db.query.carts.findMany({
 		where: eq(schema.carts.customerId, customerId),
 		with: {

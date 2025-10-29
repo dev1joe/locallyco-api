@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm/relations";
-import { brands, products, categories, addresses, customers, carts, users, orders, payments, promoCodes, shipments, reviews, accounts, cartItems, orderItems, productSkus, sessions, productImages } from "./models/models";
+import { brands, products, categories, addresses, customers, carts, user, orders, payments, promoCodes, shipments, reviews, account, cartItems, orderItems, productSkus, session, productImages } from "./models/models";
 
 export const productsRelations = relations(products, ({ one, many }) => ({
 	brand: one(brands, {
@@ -61,18 +61,18 @@ export const customerRelations = relations(customers, ({ one, many }) => ({
 		fields: [customers.addressId],
 		references: [addresses.id]
 	}),
-	user: one(users, {
+	user: one(user, {
 		fields: [customers.userId],
-		references: [users.id]
+		references: [user.id]
 	}),
 	orders: many(orders),
 	reviews: many(reviews),
 }));
 
-export const userRelations = relations(users, ({ many }) => ({
+export const userRelations = relations(user, ({ many }) => ({
 	customers: many(customers),
-	accounts: many(accounts),
-	sessions: many(sessions),
+	account: many(account),
+	session: many(session),
 }));
 
 export const orderRelations = relations(orders, ({ one, many }) => ({
@@ -122,10 +122,10 @@ export const reviewsRelations = relations(reviews, ({ one }) => ({
 	}),
 }));
 
-export const accountRelations = relations(accounts, ({ one }) => ({
-	user: one(users, {
-		fields: [accounts.userId],
-		references: [users.id]
+export const accountRelations = relations(account, ({ one }) => ({
+	user: one(user, {
+		fields: [account.userId],
+		references: [user.id]
 	}),
 }));
 
@@ -159,10 +159,10 @@ export const productSkuRelations = relations(productSkus, ({ one, many }) => ({
 	productImages: many(productImages),
 }));
 
-export const sessionRelations = relations(sessions, ({ one }) => ({
-	user: one(users, {
-		fields: [sessions.userId],
-		references: [users.id]
+export const sessionRelations = relations(session, ({ one }) => ({
+	user: one(user, {
+		fields: [session.userId],
+		references: [user.id]
 	}),
 }));
 

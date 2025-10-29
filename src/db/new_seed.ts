@@ -6,7 +6,13 @@ async function main() {
 
 	await reset(db, schema);
 
-	await seed(db, schema, { seed: 123 });
+	await seed(db, schema, { seed: 123 }).refine((funcs) => ({
+		cartItems: {
+			columns: {
+				quantity: funcs.int({ minValue: 1, maxValue: 50, isUnique: false })
+			}
+		}
+	}));
 
 }
 
