@@ -12,13 +12,12 @@
 
 import db from './db.ts';
 import {
-	InsertAddress, InsertCategory, InsertPromo, InsertCustomer, InsertBrands, InsertProducts, InsertPayment,
+	InsertAddress, InsertCategory, InsertPromo, InsertCustomer, InsertBrands, InsertProduct, InsertPayment,
 	InsertProductSku, InsertReview, InsertOrderItem, InsertProductImages, InsertReturnItem, InsertCart,
-	InsertCartItem, InsertOrder, InsertShipment, InsertDiscounts, InsertProductDiscount,
-	InsertCategoryDiscounts
+	InsertCartItem, InsertOrder, InsertShipment, InsertDiscount, InsertProductDiscount
 } from './types.ts';
-
-import { products } from './models/products.ts';
+import { products } from "./models/products";
+import { productSkus } from "./models/productSkus";
 import { brands } from './models/brands.ts';
 import { shipments } from './models/shipments.ts';
 import { orders } from './models/orders.ts';
@@ -31,12 +30,10 @@ import { carts } from './models/carts.ts';
 import { cartItems } from './models/cartItems.ts';
 import { categories } from './models/categories.ts';
 import { addresses } from './models/addresses.ts';
-import { productSkus } from './models/productSkus.ts';
 import { productImages } from './models/productImages.ts';
 import { reviews } from './models/reviews.ts';
+import { discounts } from "./models/discounts";
 import { productDiscounts } from './models/productDiscounts.ts';
-import { discounts } from './models/discounts.ts';
-import { categoryDiscounts } from './models/categoryDiscounts.ts';
 
 // --- Define your seed data here ---
 // This data is structured to respect the foreign key dependencies of your schema.
@@ -44,12 +41,11 @@ import { categoryDiscounts } from './models/categoryDiscounts.ts';
 type SeedData = {
 	addresses: InsertAddress[];
 	category: InsertCategory[];
-	discounts: InsertDiscounts[];
+	discounts: InsertDiscount[];
 	promoCodes: InsertPromo[];
 	customer: InsertCustomer[];
 	brands: InsertBrands[];
-	categoryDiscounts: InsertCategoryDiscounts[];
-	products: InsertProducts[];
+	products: InsertProduct[];
 	payments: InsertPayment[];
 	productSkus: InsertProductSku[];
 	productDiscounts: InsertProductDiscount[];
@@ -72,19 +68,13 @@ const seedData: SeedData = {
 	category: [
 		{ name: 'Electronics', description: 'Gadgets and electronic devices.', attributes: { 'type': 'electronic' } },
 		{ name: 'Apparel', description: 'Clothing and accessories.', attributes: { 'type': 'apparel' } },
-		{ name: 'Winter Collection', description: 'Stylish Winter', attributes: { 'type': 'apparel' } },
-		{ name: 'Summer Collection', description: 'Stylish Winter', attributes: { 'type': 'apparel' } },
-		{ name: 'Shoes', description: 'Some Nice Shoes', attributes: { 'type': 'apparel' } },
-		{ name: 'random category', description: 'Just a random category', attributes: { 'type': 'apparel' } },
 	] as InsertCategory[],
 	discounts: [
 		{ name: 'save30', type: 'percentage', value: 30, isActive: true, appliesToType: 'all', minPurchaseAmountCents: 100000, startDate: new Date('2025-9-1'), endDate: new Date('2026-2-30') },
-		{ name: 'winter sale', type: 'percentage', value: 10, isActive: true, appliesToType: 'category', minPurchaseAmountCents: 0, startDate: new Date('2025-10-1'), endDate: new Date('2026-2-30') },
-		{ name: 'summer sale', type: 'percentage', value: 10, isActive: true, appliesToType: 'category', minPurchaseAmountCents: 0, startDate: new Date('2026-5-1'), endDate: new Date('2026-10-1') },
-		{ name: 'random sale', type: 'amount', value: 5000, isActive: true, appliesToType: 'category', minPurchaseAmountCents: 0, startDate: new Date('2025-5-1'), endDate: new Date('2027-10-1') }, // fixed amount scenario
-	] as InsertDiscounts[],
-
-	// Level 2: Depends on Level 1 (addresses, category, promoCodes)
+		{ name: 'winter sale', type: 'percentage', value: 10, isActive: true, appliesToType: 'category', minPurchaseAmountCents: 0, startDate: new Date('2025-9-24'), endDate: new Date('2025-12-30') }
+	] as InsertDiscount[],
+	
+	// Level 2: Depends on Level 1 (addresses, category, discounts)
 	promoCodes: [
 		{ discountId: 0, code: 'SAVE30', maxUseGlobal: -1, useCountGlobal: 0, maxUsePerCustomer: 1, isStackable: true },
 	] as InsertPromo[],
@@ -98,24 +88,18 @@ const seedData: SeedData = {
 		{ name: 'Tech Innovations', description: 'Cutting-edge electronics.', },
 		{ name: 'Urban Threads', description: 'Modern and sustainable apparel.', },
 	] as InsertBrands[],
-	categoryDiscounts: [
-		{ categoryId: 2, discountId: 1},
-		{ categoryId: 3, discountId: 2},
-	] as InsertCategoryDiscounts[],
 
 	// Level 3: Depends on Level 2 (brands, customer, etc.)
 	products: [
 		{
-			categoryId: 0,
 			name: 'Ultra HD Monitor',
 			imageUrl: 'https://prd.place/400?id=5&p=40',
 			description: 'A monitor with stunning clarity.',
 			reviewCount: 6,
 			averageRating: "3.83",
-			attributes: [{ "name": "size", "type": "integer", "values": ["27"] }] // single attribute value scenario
+			attributes: [{ "name": "size", "type": "integer", "values": ["27", "32"] }]
 		},
 		{
-			categoryId: 2,
 			name: 'Cotton Hoodie',
 			imageUrl: 'https://placehold.co/600x400/fff/000',
 			description: 'A comfortable and stylish hoodie.',
@@ -145,51 +129,15 @@ const seedData: SeedData = {
 			]
 		},
 		{
-			categoryId: 2,
 			name: 'Awesome Hoodie',
-			imageUrl: 'https://placehold.co/600x400/fff/000',
+			// imageUrl: 'https://placehold.co/600x400/fff/000',
 			description: 'A comfortable and stylish hoodie.',
 			attributes: []
-		},
-		{ // no discount scenario & no review scenario
-			categoryId: 4,
-			name: 'Amazing Air Jordan Shoes',
-			imageUrl: 'https://placehold.co/600x400/fff/000',
-			description: 'All day comfort with the new Air Jordans',
-			attributes: [
-				{
-					"name": "size",
-					"type": "string",
-					"values": [
-						"40",
-						"42",
-						"44",
-						"46",
-						"48",
-					]
-				},
-				{
-					"name": "color",
-					"type": "string",
-					"values": [
-						"#f00",
-						"#00f",
-					]
-				}
-			]
-		},
-		{
-			categoryId: 5,
-			name: 'Random Product',
-			imageUrl: 'https://farm4.staticflickr.com/3049/2327691528_f060ee2d1f.jpg',
-			description: 'Just a random product',
-			reviewCount: 6,
-			averageRating: "3.83",
-			attributes: [{ "name": "size", "type": "integer", "values": ["random"] }] // single attribute value scenario
-		},
-	] as InsertProducts[],
+		}
+	] as InsertProduct[],
 	payments: [
 		{ promoId: 0, priceCent: 12000, type: 'Credit Card', status: 1 },
+		// { promoId: 2, priceCent: 8000, type: 'PayPal', status: 1 },
 	] as InsertPayment[],
 
 	// Level 4: Depends on Products, Payment, Customer, etc.
@@ -198,48 +146,25 @@ const seedData: SeedData = {
 		{ productId: 0, skuCode: 'MONITOR-UHD-GRAY', attributes: { 'size': '27' }, quantity: 50, priceCent: 35000, images: ['https://prd.place/400?id=5&p=40'] },
 
 		// Hoodie SKUs
-		{ productId: 1, skuCode: 'HOODIE-COT-S-BLK', attributes: { 'color': '#000', 'size': 'S' }, quantity: 80, priceCent: 5500, images: ['https://placehold.co/600x400/fff/000?text=T-shirt'] },
-		{ productId: 1, skuCode: 'HOODIE-COT-M-BLK', attributes: { 'color': '#000', 'size': 'M' }, quantity: 54, priceCent: 5500, images: ['https://placehold.co/600x400/fff/000?text=T-shirt'] },
-		{ productId: 1, skuCode: 'HOODIE-COT-L-BLK', attributes: { 'color': '#000', 'size': 'L' }, quantity: 21, priceCent: 5500, images: ['https://placehold.co/600x400/fff/000?text=T-shirt'] },
-		{ productId: 1, skuCode: 'HOODIE-COT-XL-BLK', attributes: { 'color': '#000', 'size': 'XL' }, quantity: 12, priceCent: 5500, images: ['https://placehold.co/600x400/fff/000?text=T-shirt'] },
+		{ productId: 1, skuCode: 'HOODIE-COT-S-BLK', attributes: { 'color': '#000', 'size': 'S' }, quantity: 211, priceCent: 5500, images: ['https://placehold.co/600x400/fff/000?text=T-shirt'] },
+		{ productId: 1, skuCode: 'HOODIE-COT-M-BLK', attributes: { 'color': '#000', 'size': 'M' }, quantity: 107, priceCent: 5500, images: ['https://placehold.co/600x400/fff/000?text=T-shirt'] },
+		{ productId: 1, skuCode: 'HOODIE-COT-L-BLK', attributes: { 'color': '#000', 'size': 'L' }, quantity: 112, priceCent: 5500, images: ['https://placehold.co/600x400/fff/000?text=T-shirt'] },
+		{ productId: 1, skuCode: 'HOODIE-COT-XL-BLK', attributes: { 'color': '#000', 'size': 'XL' }, quantity: 112, priceCent: 5500, images: ['https://placehold.co/600x400/fff/000?text=T-shirt'] },
 		{ productId: 1, skuCode: 'HOODIE-COT-S-RED', attributes: { 'color': '#f00', 'size': 'S' }, quantity: 211, priceCent: 5500, images: ['https://placehold.co/600x400/fff/f00?text=T-shirt'] },
 		{ productId: 1, skuCode: 'HOODIE-COT-M-RED', attributes: { 'color': '#f00', 'size': 'M' }, quantity: 107, priceCent: 5500, images: ['https://placehold.co/600x400/fff/f00?text=T-shirt'] },
-		{ productId: 1, skuCode: 'HOODIE-COT-L-RED', attributes: { 'color': '#f00', 'size': 'L' }, quantity: 13, priceCent: 5500, images: ['https://placehold.co/600x400/fff/f00?text=T-shirt'] },
-		{ productId: 1, skuCode: 'HOODIE-COT-XL-RED', attributes: { 'color': '#f00', 'size': 'XL' }, quantity: 0, priceCent: 5500, images: ['https://placehold.co/600x400/fff/f00?text=T-shirt'] },
+		{ productId: 1, skuCode: 'HOODIE-COT-L-RED', attributes: { 'color': '#f00', 'size': 'L' }, quantity: 112, priceCent: 5500, images: ['https://placehold.co/600x400/fff/f00?text=T-shirt'] },
+		{ productId: 1, skuCode: 'HOODIE-COT-XL-RED', attributes: { 'color': '#f00', 'size': 'XL' }, quantity: 112, priceCent: 5500, images: ['https://placehold.co/600x400/fff/f00?text=T-shirt'] },
 		{ productId: 1, skuCode: 'HOODIE-COT-S-GRN', attributes: { 'color': '#0f0', 'size': 'S' }, quantity: 211, priceCent: 5500, images: ['https://placehold.co/600x400/fff/0f0?text=T-shirt'] },
 		{ productId: 1, skuCode: 'HOODIE-COT-M-GRN', attributes: { 'color': '#0f0', 'size': 'M' }, quantity: 107, priceCent: 5500, images: ['https://placehold.co/600x400/fff/0f0?text=T-shirt'] },
-		{ productId: 1, skuCode: 'HOODIE-COT-L-GRN', attributes: { 'color': '#0f0', 'size': 'L' }, quantity: 112, priceCent: 5500, images: ['https://placehold.co/600x400/fff/0f0?text=T-shirt'] },
+		{ productId: 1, s9kuCode: 'HOODIE-COT-L-GRN', attributes: { 'color': '#0f0', 'size': 'L' }, quantity: 112, priceCent: 5500, images: ['https://placehold.co/600x400/fff/0f0?text=T-shirt'] },
 		{ productId: 1, skuCode: 'HOODIE-COT-XL-GRN', attributes: { 'color': '#0f0', 'size': 'XL' }, quantity: 112, priceCent: 5500, images: ['https://placehold.co/600x400/fff/0f0?text=T-shirt'] },
 		{ productId: 1, skuCode: 'HOODIE-COT-S-BLU', attributes: { 'color': '#00f', 'size': 'S' }, quantity: 211, priceCent: 5500, images: ['https://placehold.co/600x400/fff/00f?text=T-shirt'] },
 		{ productId: 1, skuCode: 'HOODIE-COT-M-BLU', attributes: { 'color': '#00f', 'size': 'M' }, quantity: 107, priceCent: 5500, images: ['https://placehold.co/600x400/fff/00f?text=T-shirt'] },
 		{ productId: 1, skuCode: 'HOODIE-COT-L-BLU', attributes: { 'color': '#00f', 'size': 'L' }, quantity: 112, priceCent: 5500, images: ['https://placehold.co/600x400/fff/00f?text=T-shirt'] },
 		{ productId: 1, skuCode: 'HOODIE-COT-XL-BLU', attributes: { 'color': '#00f', 'size': 'XL' }, quantity: 112, priceCent: 5500, images: ['https://placehold.co/600x400/fff/00f?text=T-shirt'] },
-
-		// Air Jordans SKUs
-		// different price per SKU scenario
-		// SKU not in stock scenario
-		{ productId: 3, skuCode: 'JR-40-blu', attributes: { 'color': '#00f', 'size': '40' }, quantity: 19, priceCent: 1500000, images: ['https://placehold.co/600x400/fff/00f?text=Air-Jordans'] },
-		{ productId: 3, skuCode: 'JR-42-blu', attributes: { 'color': '#00f', 'size': '42' }, quantity: 5, priceCent: 1500000, images: ['https://placehold.co/600x400/fff/00f?text=Air-Jordans'] },
-		{ productId: 3, skuCode: 'JR-44-blu', attributes: { 'color': '#00f', 'size': '44' }, quantity: 0, priceCent: 1500000, images: ['https://placehold.co/600x400/fff/00f?text=Air-Jordans'] },
-		{ productId: 3, skuCode: 'JR-46-blu', attributes: { 'color': '#00f', 'size': '46' }, quantity: 0, priceCent: 1500000, images: ['https://placehold.co/600x400/fff/00f?text=Air-Jordans'] },
-		{ productId: 3, skuCode: 'JR-48-blu', attributes: { 'color': '#00f', 'size': '48' }, quantity: 10, priceCent: 1500000, images: ['https://placehold.co/600x400/fff/00f?text=Air-Jordans'] },
-		{ productId: 3, skuCode: 'JR-40-red', attributes: { 'color': '#f00', 'size': '40' }, quantity: 22, priceCent: 1800000, images: ['https://placehold.co/600x400/fff/f00?text=Air-Jordans'] },
-		{ productId: 3, skuCode: 'JR-42-red', attributes: { 'color': '#f00', 'size': '42' }, quantity: 1, priceCent: 1800000, images: ['https://placehold.co/600x400/fff/f00?text=Air-Jordans'] },
-		{ productId: 3, skuCode: 'JR-44-red', attributes: { 'color': '#f00', 'size': '44' }, quantity: 0, priceCent: 1800000, images: ['https://placehold.co/600x400/fff/f00?text=Air-Jordans'] },
-		{ productId: 3, skuCode: 'JR-46-red', attributes: { 'color': '#f00', 'size': '46' }, quantity: 4, priceCent: 1800000, images: ['https://placehold.co/600x400/fff/f00?text=Air-Jordans'] },
-		{ productId: 3, skuCode: 'JR-48-red', attributes: { 'color': '#f00', 'size': '48' }, quantity: 9, priceCent: 1800000, images: ['https://placehold.co/600x400/fff/f00?text=Air-Jordans'] },
-		{ productId: 3, skuCode: 'JR-40-blk', attributes: { 'color': '#000', 'size': '40' }, quantity: 22, priceCent: 1500000, images: ['https://placehold.co/600x400/fff/000?text=Air-Jordans'] },
-		{ productId: 3, skuCode: 'JR-42-blk', attributes: { 'color': '#000', 'size': '42' }, quantity: 1, priceCent: 1500000, images: ['https://placehold.co/600x400/fff/000?text=Air-Jordans'] },
-		{ productId: 3, skuCode: 'JR-44-blk', attributes: { 'color': '#000', 'size': '44' }, quantity: 0, priceCent: 1500000, images: ['https://placehold.co/600x400/fff/000?text=Air-Jordans'] },
-		{ productId: 3, skuCode: 'JR-46-blk', attributes: { 'color': '#000', 'size': '46' }, quantity: 4, priceCent: 1500000, images: ['https://placehold.co/600x400/fff/000?text=Air-Jordans'] },
-		{ productId: 3, skuCode: 'JR-48-blk', attributes: { 'color': '#000', 'size': '48' }, quantity: 9, priceCent: 1500000, images: ['https://placehold.co/600x400/fff/000?text=Air-Jordans'] },
-
-		// Random Product SKUs
-		{ productId: 4, skuCode: 'rand', attributes: { 'size': 'random' }, quantity: 9, priceCent: 10000, images: ['https://placehold.co/600x400/fff/000?text=Random-Product'] },
 	] as InsertProductSku[],
 	productDiscounts: [
-		{ discountId: 0, productId: 0 },
-		{ discountId: 3, productId: 4},
+		{ discountId: 1, productId: 1 }
 	] as InsertProductDiscount[],
 	review: [
 		// monitor reviews
@@ -259,9 +184,6 @@ const seedData: SeedData = {
 		{ customerId: 2, productId: 1, rate: 4, comment: 'Nice Hoodie, shipped quickly!' },
 		{ customerId: 0, productId: 1, rate: 4, comment: 'Good Hoodie' },
 		{ customerId: 0, productId: 1, rate: 2, comment: `Did't like the material, there are better materials out in the market.` },
-
-		// Air Jordans reviews
-		// no reviews scenario
 	] as InsertReview[],
 
 	// These arrays were missing; add minimal valid entries matching the DB models
@@ -327,8 +249,6 @@ async function seedDatabase() {
 			await tx.delete(categories);
 			await tx.delete(addresses);
 			await tx.delete(cartItems);
-			await tx.delete(productDiscounts);
-			await tx.delete(discounts);
 
 			console.log('Existing data deleted.');
 
@@ -338,7 +258,7 @@ async function seedDatabase() {
 			const addressesResult = await tx.insert(addresses).values(seedData.addresses).returning({ id: addresses.id });
 			const categoriesResult = await tx.insert(categories).values(seedData.category).returning({ id: categories.id });
 			const discountsResult = await tx.insert(discounts).values(seedData.discounts).returning({ id: discounts.id });
-
+			
 			const seedPromo = seedData.promoCodes.map(p => ({...p, discountId: discountsResult[p.discountId].id }));
 			const promosResult = await tx.insert(promoCodes).values(seedPromo).returning({ id: promoCodes.id });
 			const seededCustomers = seedData.customer.map(c => ({ ...c, addressId: addressesResult[0].id }));
@@ -347,10 +267,7 @@ async function seedDatabase() {
 			const seededBrands = seedData.brands.map(b => ({ ...b, categoryId: categoriesResult[0].id, addresses: addressesResult[0].id }));
 			const brandsResult = await tx.insert(brands).values(seededBrands).returning({ id: brands.id });
 
-			const seedCategoryDiscounts = seedData.categoryDiscounts.map(d => ({ ...d, categoryId: categoriesResult[d.categoryId].id, discountId: discountsResult[d.discountId].id }));
-			await tx.insert(categoryDiscounts).values(seedCategoryDiscounts);
-
-			const seededProducts = seedData.products.map(p => ({ ...p, categoryId: categoriesResult[p.categoryId].id, brandId: brandsResult[0].id }));
+			const seededProducts = seedData.products.map(p => ({ ...p, categoryId: categoriesResult[0].id, brandId: brandsResult[0].id }));
 			const productsResult = await tx.insert(products).values(seededProducts).returning({ id: products.id });
 
 			const seededPayments = seedData.payments.map(p => ({ ...p, promoId: promosResult[0].id }));
@@ -360,12 +277,12 @@ async function seedDatabase() {
 			const ordersResult = await tx.insert(orders).values(seededOrders).returning({ id: orders.id });
 
 			const seededCarts = seedData.carts.map(c => ({ ...c, customerId: customersResult[0].id }));
-			await tx.insert(carts).values(seededCarts).returning({ id: carts.id });
+			const cartsResult = await tx.insert(carts).values(seededCarts).returning({ id: carts.id });
 
-			// const seededCartsItem = seedData.cartItems.map((c, index) => (
-			// 	{ ...c, cartId: cartsResult[index].id }
-			// ));
-			// await tx.insert(cartItems).values(seededCartsItem);
+			const seededCartsItem = seedData.cartItems.map((c, index) => (
+				{ cartId: cartsResult[index].id, ...c }
+			));
+			await tx.insert(cartItems).values(seededCartsItem);
 
 			// Seeding SKUs
 			let seededProductSkus = seedData.productSkus.map(sku => ({ ...sku, productId: productsResult[sku.productId].id }));
@@ -373,8 +290,8 @@ async function seedDatabase() {
 			const productSkusResult = await tx.insert(productSkus).values(seededProductSkus).returning({ id: productSkus.id });
 
 			// seeding ProductDiscounts
-			let seededProductDiscounts = seedData.productDiscounts.map(dis => ({ ...dis, productId: productsResult[dis.productId].id, discountId: discountsResult[dis.discountId].id }));
-			await tx.insert(productDiscounts).values(seededProductDiscounts);
+			let seededProductDiscounts = seedData.productDiscounts.map(dis => ({...dis, productId: productsResult[dis.productId].id, discountId: discountsResult[dis.discountId].id }));
+			const productDiscountsResult = await tx.insert(productDiscounts).values(seededProductDiscounts).returning();
 
 			// Seeding Reviews
 			const seededReviews = seedData.review.map(r => ({ ...r, productId: productsResult[r.productId].id, customerId: customersResult[r.customerId].id }));

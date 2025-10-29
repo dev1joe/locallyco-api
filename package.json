@@ -16,6 +16,7 @@
     "db:generate": "npx drizzle-kit generate",
     "db:migrate": "npx drizzle-kit migrate",
     "db:seed": "tsx -r tsconfig-paths/register ./src/db/seed.ts",
+    "db:seed:new": "tsx -r tsconfig-paths/register ./src/db/new_seed.ts",
     "db:introspect:relations": "npx drizzle-kit introspect && mv src/db/migrations/relations.ts src/db/relations.ts && rm src/db/migrations/schema.ts"
   },
   "dependencies": {

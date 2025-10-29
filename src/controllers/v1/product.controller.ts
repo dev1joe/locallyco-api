@@ -1,7 +1,7 @@
-import * as E from "express";
 import { type Request, type Response } from "express"
 import * as PS from "../../services/v1/product.service.ts";
 import * as SS from "../../services/v1/sku.service.ts";
+import * as DS from "../../services/v1/discount.service.ts";
 import { validationResult, matchedData } from "express-validator";
 
 export async function getProducts(req: Request, res: Response) {
@@ -10,8 +10,8 @@ export async function getProducts(req: Request, res: Response) {
         console.log("request query params", queryParams)
         const products = await PS.getProducts(queryParams);
 
-        if (!products) {
-            return res.status(500).json({ error: "Failed to retrieve products" });
+        if (!products || products.length < 1) {
+            return res.status(404).json({ message: "No products found" });
         }
 
         return res.json({ "result": products });
@@ -21,7 +21,7 @@ export async function getProducts(req: Request, res: Response) {
     }
 }
 
-export async function getProductById(req: E.Request, res: E.Response) {
+export async function getProductById(req: Request, res: Response) {
     const id = parseInt(req.params.id, 10);
     if (isNaN(id)) {
         return res.status(400).json({ error: "Invalid product ID" });
@@ -41,7 +41,7 @@ export async function getProductById(req: E.Request, res: E.Response) {
     }
 }
 
-export async function getProductVersions(req: E.Request, res: E.Response) {
+export async function getProductVersions(req: Request, res: Response) {
     const id = parseInt(req.params.id, 10);
     if (isNaN(id)) {
         return res.status(400).json({ error: "Invalid product ID" });
@@ -49,14 +49,14 @@ export async function getProductVersions(req: E.Request, res: E.Response) {
 
     try {
         const product = await PS.getProductById(id);
-        if(! product) {
-            return res.status(404).json({ error: "Product not found"});
+        if (!product) {
+            return res.status(404).json({ error: "Product not found" });
         }
 
         const versions = await SS.getSkuByProductId(id);
 
-        if (! versions) {
-            return res.status(404).json({error: "Product versions not found"});
+        if (!versions) {
+            return res.status(404).json({ error: "Product versions not found" });
         }
 
         return res.json({ result: versions });
@@ -66,7 +66,55 @@ export async function getProductVersions(req: E.Request, res: E.Response) {
     }
 }
 
-export async function createProduct(req: E.Request, res: E.Response) {
+export async function getProductDiscounts(req: Request, res: Response) {
+    const id = parseInt(req.params.id, 10);
+    if (isNaN(id)) {
+        return res.status(400).json({ error: "Invalid product ID" });
+    }
+
+    try {
+        const product = await PS.getProductById(id);
+        if (!product) {
+            return res.status(404).json({ error: "Product not found" });
+        }
+
+        const discounts = await DS.getProductDiscounts(id);
+
+        if (!discounts || discounts.length < 1) {
+            return res.status(404).json({ error: "Product discounts not found" });
+        }
+
+        return res.json({ result: discounts });
+    } catch (e) {
+        console.log(e);
+        return res.status(500).json({ error: "Failed to retrieve product discounts" });
+    }
+}
+
+export async function getRelevantProducts(req: Request, res: Response) {
+    const limit = parseInt(req.query.limit as string) ?? 5;
+    const score = parseInt(req.query.score as string) ?? 2;
+    
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+        return res.status(400).json({ error: "Invalid product ID"});
+    }
+
+    try {
+        const products = await PS.getRelevantProducts(id, score, limit);
+
+        if (!products || products.length < 1) {
+            return res.status(404).json({ error: "No relevant products found"});
+        }
+
+        return res.json({ result: products });
+    } catch (e) {
+        console.log(e);
+        return res.status(500).json({ error: "Failed to retrieve relevant products"});
+    }
+}
+
+export async function createProduct(req: Request, res: Response) {
     try {
         const valResult = validationResult(req);
         if (!valResult.isEmpty()) {
@@ -82,10 +130,10 @@ export async function createProduct(req: E.Request, res: E.Response) {
     }
 }
 
-export async function updateProduct(req: E.Request, res: E.Response) {
+export async function updateProduct(req: Request, res: Response) {
     try {
         const id = parseInt(req.params.id);
-        if(isNaN(id)) {
+        if (isNaN(id)) {
             return res.status(400).json({ error: "Invalid product ID" });
         }
 
@@ -103,7 +151,7 @@ export async function updateProduct(req: E.Request, res: E.Response) {
     }
 }
 
-export async function deleteProduct(req: E.Request, res: E.Response) {
+export async function deleteProduct(req: Request, res: Response) {
     const id = parseInt(req.params.id, 10);
     if (isNaN(id)) {
         return res.status(400).json({ error: "Invalid product ID" });

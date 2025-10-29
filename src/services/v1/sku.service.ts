@@ -1,6 +1,6 @@
 import db from "../../db/db.ts";
 import { productSkus } from "@src/db/models/productSkus.ts";
-import { NewProductSku } from "@src/db/types.ts";
+import { InsertProductSku } from "@src/db/types.ts";
 import { eq } from "drizzle-orm";
 
 export async function getSku(): Promise<Array<Object>> {
@@ -21,7 +21,7 @@ export async function getSkuByProductId(id: number): Promise<Array<Object>> {
     return await db?.select().from(productSkus).where(eq(productSkus.productId, id));
 }
 
-export async function createSku(data: NewProductSku) {
+export async function createSku(data: InsertProductSku) {
     return await db?.insert(productSkus).values(data);
 }
 
