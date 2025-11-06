@@ -1,5 +1,6 @@
 import { relations } from "drizzle-orm/relations";
 import { brands, products, categories, addresses, customers, carts, user, orders, payments, promoCodes, shipments, reviews, account, cartItems, orderItems, productSkus, session, productImages, discounts, productDiscounts, brandDiscounts, categoryDiscounts } from "./models/models";
+import { categoryImages } from "./models/categoryImages";
 
 export const productsRelations = relations(products, ({ one, many }) => ({
 	brand: one(brands, {
@@ -34,14 +35,18 @@ export const categoriesRelations = relations(categories, ({ one, many }) => ({
 	products: many(products),
 	brands: many(brands),
 	discounts: many(categoryDiscounts),
-	category: one(categories, {
+	parent: one(categories, {
 		fields: [categories.parentId],
 		references: [categories.id],
 		relationName: "categories_parentId_categories_id"
 	}),
-	categories: many(categories, {
+	children: many(categories, {
 		relationName: "categories_parentId_categories_id"
 	}),
+	image: one(categoryImages, {
+		fields: [categories.imageId],
+		references: [categoryImages.id]
+	})
 }));
 
 export const discountsRelations = relations(discounts, ({ many }) => ({
