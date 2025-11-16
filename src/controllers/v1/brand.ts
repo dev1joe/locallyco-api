@@ -10,6 +10,7 @@ import {
 import db from "@src/db/db";
 import { schema } from "@src/db/schema";
 import { to } from "src/utils/to"
+import { ApiResponse } from "src/types/v1/response";
 
 export const brandRouter = Router();
 
@@ -29,23 +30,61 @@ export const brandRouter = Router();
 // 	return res.json({ "result": parsedBrands.data });
 // });
 
-brandRouter.get("/:brandId", async (req: Request, res: Response) => {
-	const id = await z.coerce.number().safeParseAsync(req.params.id);
-	if (!id.success) {
-		return res.status(500).json({ error: id.error.message });
+brandRouter.get("/:brandId", async (req: Request, res: Response<ApiResponse>) => {
+
+	// Parse parameters
+	const paramsSchema = z.object({
+		brandId: z.coerce.number(),
+	})
+
+	const parsedParams = await paramsSchema.safeParseAsync(req.params);
+
+	if (!parsedParams.success) {
+		return res.status(500).json({
+			success: false,
+			error: parsedParams.error.message
+		});
 	}
 
-	const rawBrands = await to(db.select().from(schema.brands).where(eq(schema.brands.id, id.data)));
+	const { brandId } = parsedParams.data;
+
+	// query and validator need to be finished
+	// Query
+	const rawBrands = await to(db.query.brands.findFirst({
+		where: eq(schema.brands.id, brandId),
+		with: {
+
+
+		}
+
+	}));
+
 	if (!rawBrands.success) {
-		return res.status(500).json({ error: rawBrands.error.message });
+		return res.status(500).json({
+			success: false,
+			error: rawBrands.error.message
+		});
 	}
 
-	const parsedBrands = await brandSelectSchema.array().safeParseAsync(rawBrands.data);
+	const validationSchema = z.strictObject({
+
+
+	});
+
+	const parsedBrands = await validationSchema.safeParseAsync(rawBrands.data);
+
 	if (!parsedBrands.success) {
-		return res.status(500).json({ error: parsedBrands.error.message });
+		return res.status(500).json({
+			success: false,
+			error: parsedBrands.error.message
+		});
 	}
 
-	return res.json({ "result": parsedBrands.data });
+	// Retrun results
+	return res.status(200).json({
+		success: true,
+		result: parsedBrands.data
+	});
 });
 
 // see better-auth docs to get user
