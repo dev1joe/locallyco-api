@@ -12,10 +12,10 @@
 
 import db from './db.ts';
 import {
-	InsertAddress, InsertCategory, InsertPromo, InsertCustomer, InsertBrands, InsertProducts, InsertPayment,
+	InsertAddress, InsertCategoryImage, InsertCategory, InsertPromo, InsertCustomer, InsertBrands, InsertProducts, InsertPayment,
 	InsertProductSku, InsertReview, InsertOrderItem, InsertProductImages, InsertReturnItem, InsertCart,
 	InsertCartItem, InsertOrder, InsertShipment, InsertDiscounts, InsertProductDiscount,
-	InsertCategoryDiscounts
+	InsertCategoryDiscounts, InsertUser
 } from './types.ts';
 
 import { products } from './models/products.ts';
@@ -37,15 +37,20 @@ import { reviews } from './models/reviews.ts';
 import { productDiscounts } from './models/productDiscounts.ts';
 import { discounts } from './models/discounts.ts';
 import { categoryDiscounts } from './models/categoryDiscounts.ts';
+import { user } from './models/authSchema.ts';
+import { categoryImages } from './models/categoryImages.ts';
 
 // --- Define your seed data here ---
 // This data is structured to respect the foreign key dependencies of your schema.
 
 type SeedData = {
 	addresses: InsertAddress[];
+	categoryImages: InsertCategoryImage[];
 	category: InsertCategory[];
+	childCategories: InsertCategory[];
 	discounts: InsertDiscounts[];
 	promoCodes: InsertPromo[];
+	users: InsertUser[];
 	customer: InsertCustomer[];
 	brands: InsertBrands[];
 	categoryDiscounts: InsertCategoryDiscounts[];
@@ -68,15 +73,20 @@ const seedData: SeedData = {
 	addresses: [
 		{ country: 'USA', governorate: 'California', district: 'Silicon Valley', street: '123 Tech St', building: 'A', floor: 10, apartment: 101 },
 		{ country: 'UK', governorate: 'London', district: 'Westminster', street: '456 Art St', building: 'B', floor: 5, apartment: 502 },
+		{ country: 'Egypt', governorate: 'Alexandria', district: 'Sidi Gaber', street: 'port said st.', building: 'A', floor: '6', apartment: 603 },
+		{ country: 'Egypt', governorate: 'Alexandria', district: 'Sidi Gaber', street: 'port said st.', building: 'B', floor: '3', apartment: 301 },
 	] as InsertAddress[],
-	category: [
-		{ name: 'Electronics', description: 'Gadgets and electronic devices.', attributes: { 'type': 'electronic' } },
-		{ name: 'Apparel', description: 'Clothing and accessories.', attributes: { 'type': 'apparel' } },
-		{ name: 'Winter Collection', description: 'Stylish Winter', attributes: { 'type': 'apparel' } },
-		{ name: 'Summer Collection', description: 'Stylish Winter', attributes: { 'type': 'apparel' } },
-		{ name: 'Shoes', description: 'Some Nice Shoes', attributes: { 'type': 'apparel' } },
-		{ name: 'random category', description: 'Just a random category', attributes: { 'type': 'apparel' } },
-	] as InsertCategory[],
+	categoryImages: [
+		{ url: 'https://picsum.photos/300/300', height: 300, labelPosition: 'bottom-left' },
+		{ url: 'https://picsum.photos/id/338/1280/720', height: 720, labelPosition: 'top-left' },
+		{ url: 'https://picsum.photos/1200/627', height: 627, labelPosition: 'center' },
+		{ url: 'https://picsum.photos/200/300', height: 300, labelPosition: 'bottom-left' },
+		{ url: 'https://picsum.photos/id/103/700/700', height: 700, labelPosition: 'center' },
+		{ url: 'https://picsum.photos/id/349/700/700', height: 700, labelPosition: 'center' },
+		{ url: 'https://picsum.photos/id/399/700/700', height: 700, labelPosition: 'top-right' },
+		{ url: 'https://picsum.photos/id/473/700/700', height: 700, labelPosition: 'bottom-right' },
+		{ url: 'https://picsum.photos/700/700', height: 700, labelPosition: 'center' },
+	] as InsertCategoryImage[],
 	discounts: [
 		{ name: 'save30', type: 'percentage', value: 30, isActive: true, appliesToType: 'all', minPurchaseAmountCents: 100000, startDate: new Date('2025-9-1'), endDate: new Date('2026-2-30') },
 		{ name: 'winter sale', type: 'percentage', value: 10, isActive: true, appliesToType: 'category', minPurchaseAmountCents: 0, startDate: new Date('2025-10-1'), endDate: new Date('2026-2-30') },
@@ -88,20 +98,34 @@ const seedData: SeedData = {
 	promoCodes: [
 		{ discountId: 0, code: 'SAVE30', maxUseGlobal: -1, useCountGlobal: 0, maxUsePerCustomer: 1, isStackable: true },
 	] as InsertPromo[],
-	customer: [
-		{ fname: 'John', lname: 'Doe' },
-		{ fname: 'Jane', lname: 'Doe' },
-		{ fname: 'John', lname: 'Smith' },
-		{ fname: 'Jane', lname: 'Smith' },
-	] as InsertCustomer[],
+	users: [
+		{ id: "user1", name: "John Doe", email: "john.doe@example.com" },
+		{ id: "user2", name: "Jane Doe", email: "jane.doe@example.com" },
+		{ id: "user3", name: "John smith", email: "john.smith@example.com" },
+		{ id: "user4", name: "Jane smith", email: "jane.smith@example.com" },
+	] as InsertUser[],
 	brands: [
-		{ name: 'Tech Innovations', description: 'Cutting-edge electronics.', },
-		{ name: 'Urban Threads', description: 'Modern and sustainable apparel.', },
+		{ name: 'Tech Innovations', description: 'Cutting-edge electronics.', userId: "user1" },
+		{ name: 'Urban Threads', description: 'Modern and sustainable apparel.', userId: "user2" },
 	] as InsertBrands[],
-	categoryDiscounts: [
-		{ categoryId: 2, discountId: 1},
-		{ categoryId: 3, discountId: 2},
-	] as InsertCategoryDiscounts[],
+		category: [
+		{ name: 'Electronics', description: 'Gadgets and electronic devices.' },
+		{ name: 'Apparel', description: 'Clothing and accessories.' },
+		{ name: 'Winter Collection', description: 'Stylish Winter' },
+		{ name: 'Summer Collection', description: 'Stylish Winter' },
+		{ name: 'Shoes', description: 'Some Nice Shoes', imageId: 4 },
+		{ name: 'random category', description: 'Just a random category' },
+		{ name: 'Shirts', description: 'Nice Shirts', imageId: 6 },
+		{ name: 'Pants', description: 'Nice Pants', imageId: 7 },
+	] as InsertCategory[],
+	childCategories: [
+		{ name: 'Hoodies', parentId: 2, imageId: 0 },
+		{ name: 'Jackets', parentId: 2, imageId: 1 },
+		{ name: 'Boots', parentId: 2, imageId: 2 },
+		{ name: 'Scarfs', parentId: 2, imageId: 3 },
+		{ name: 'Shorts', parentId: 3, imageId: 5 },
+		{ name: 'T-shirts', parentId: 3, imageId: 8 },
+	] as InsertCategory[],
 
 	// Level 3: Depends on Level 2 (brands, customer, etc.)
 	products: [
@@ -191,6 +215,16 @@ const seedData: SeedData = {
 	payments: [
 		{ promoId: 0, priceCent: 12000, type: 'Credit Card', status: 1 },
 	] as InsertPayment[],
+	customer: [
+		{ fname: 'John', lname: 'Doe', userId: "user1", addressId: 0 },
+		{ fname: 'Jane', lname: 'Doe', userId: "user2", addressId: 1 },
+		{ fname: 'John', lname: 'Smith', userId: "user3", addressId: 2 },
+		{ fname: 'Jane', lname: 'Smith', userId: "user4", addressId: 3 },
+	] as InsertCustomer[],
+		categoryDiscounts: [
+		{ categoryId: 2, discountId: 1},
+		{ categoryId: 3, discountId: 2},
+	] as InsertCategoryDiscounts[],
 
 	// Level 4: Depends on Products, Payment, Customer, etc.
 	productSkus: [
@@ -323,12 +357,13 @@ async function seedDatabase() {
 			await tx.delete(payments);
 			await tx.delete(customers);
 			await tx.delete(brands);
+			await tx.delete(user);
 			await tx.delete(promoCodes);
 			await tx.delete(categories);
+			await tx.delete(categoryImages);
 			await tx.delete(addresses);
 			await tx.delete(cartItems);
 			await tx.delete(productDiscounts);
-			await tx.delete(discounts);
 
 			console.log('Existing data deleted.');
 
@@ -336,11 +371,34 @@ async function seedDatabase() {
 			// IMPORTANT: Insert in the correct order to satisfy foreign key constraints.
 			// E.g., addresses must exist before customers can reference them.
 			const addressesResult = await tx.insert(addresses).values(seedData.addresses).returning({ id: addresses.id });
-			const categoriesResult = await tx.insert(categories).values(seedData.category).returning({ id: categories.id });
+
+			const categoryImagesResult = await tx.insert(categoryImages).values(seedData.categoryImages).returning({ id: categoryImages.id });
+			// console.log("Category Images Result: ", categoryImagesResult);
+			
+			const seedCategories = seedData.category.map((c) => ((c.imageId)? {...c, imageId: categoryImagesResult[c.imageId].id} : c));
+			const categoriesResult = await tx.insert(categories).values(seedCategories).returning({ id: categories.id });
+			// console.log("Categories Result", categoriesResult);
+
+			const seedChildCategories = seedData.childCategories.map((c) => { 
+				if (c.parentId != null) { 
+					// console.log(`setting parent category ID of ${c.name} to ${categoriesResult[c.parentId].id}`);
+					c = { ...c, parentId: categoriesResult[c.parentId].id };
+				};
+				if (c.imageId != null) {
+					// console.log(`setting category image ID of ${c.name} to ${categoryImagesResult[c.imageId].id}`);
+					c = { ...c, imageId: categoryImagesResult[c.imageId].id };
+				};
+				return c;
+			});
+			const childCategoriesResult = await tx.insert(categories).values(seedChildCategories).returning({ id: categories.id });
+
 			const discountsResult = await tx.insert(discounts).values(seedData.discounts).returning({ id: discounts.id });
 
 			const seedPromo = seedData.promoCodes.map(p => ({...p, discountId: discountsResult[p.discountId].id }));
 			const promosResult = await tx.insert(promoCodes).values(seedPromo).returning({ id: promoCodes.id });
+
+			const usersResult = await tx.insert(user).values(seedData.users).returning();
+
 			const seededCustomers = seedData.customer.map(c => ({ ...c, addressId: addressesResult[0].id }));
 			const customersResult = await tx.insert(customers).values(seededCustomers).returning({ id: customers.id });
 

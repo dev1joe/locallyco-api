@@ -18,9 +18,14 @@ import { reviews } from './models/reviews.ts';
 import { discounts } from "./models/discounts";
 import { productDiscounts } from "./models/productDiscounts.ts";
 import { categoryDiscounts } from "./models/categoryDiscounts.ts";
+import { user } from "./models/authSchema.ts";
+import { categoryImages } from "./models/categoryImages.ts";
 
 export type Category = InferSelectModel<typeof categories>;
 export type InsertCategory = InferInsertModel<typeof categories>;
+
+export type categoryImage = InferSelectModel<typeof categoryImages>;
+export type InsertCategoryImage = InferInsertModel<typeof categoryImages>;
 
 export type CategoryDiscount = InferSelectModel<typeof categoryDiscounts>
 export type InsertCategoryDiscounts = InferInsertModel<typeof categoryDiscounts>
@@ -41,6 +46,7 @@ export type InsertProductDiscount = InferInsertModel<typeof productDiscounts>
 
 
 export type InsertAddress = InferInsertModel<typeof addresses>;
+export type InsertUser = InferInsertModel<typeof user>;
 export type InsertCustomer = InferInsertModel<typeof customers>;
 export type InsertPromo = InferInsertModel<typeof promoCodes>;
 export type InsertPayment = InferInsertModel<typeof payments>;

@@ -13,9 +13,11 @@
 - run `npm install` for installing the application dependencies.
 - run the backend and database only:
     - run `docker compose up -d --build`
+    - to stop docker run `docker compose down`
 - run frontend, backend, and database:
     - make sure you're following the "Recommended File Structure"
     - run `docker compose --profile frontend up -d --build`
+    - to stop docker run `docker compose --profile frontend down`
 - you only need the `--build` flag if:
     - it's your first time running the application, which means you don't have the docker images yet.
     - your changed one of the Dockerfiles in the backend or frontend directories, hence you'll need docker to generate new images, so you use the `--build` flag.

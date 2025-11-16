@@ -1,26 +1,23 @@
 import { config } from "../../config/config.ts";
 import { schema } from "./schema.ts";
-import * as relations from "./relations"
-import { drizzle, NodePgDatabase } from "drizzle-orm/node-postgres"
+import * as relations from "./relations.ts"
+import { drizzle } from "drizzle-orm/neon-http";
+import { neon } from "@neondatabase/serverless";
 import { Pool } from "pg"
 
-const schema_relations = { ...schema, ...relations }
+const schema_relations = { ...schema, ...relations };
+export type DB = ReturnType<typeof drizzle<typeof schema_relations>>;
+let db: DB | null = null;
 
-function connectToDatabase(credentials: Object): NodePgDatabase<typeof schema_relations> {
-	const pool = new Pool(credentials);
-	return drizzle(pool, {
-		schema: schema_relations,
-		casing: "snake_case",
-	});
+function getDB(credentials: string) {
+    if (!db) {
+        const sql = neon(credentials);
+        db = drizzle(sql, {
+            schema: schema_relations,
+            casing: "snake_case",
+        });
+    }
+    return db;
 }
 
-let db: NodePgDatabase<typeof schema_relations>;
-
-try {
-	db = connectToDatabase(config.db);
-} catch (error) {
-	console.error("Failed to init db with errors:", error);
-	process.exit(1);
-}
-
-export default db;
+export default getDB(config.db.url);

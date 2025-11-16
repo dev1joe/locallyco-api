@@ -10,6 +10,7 @@ export * from './customers.ts';
 export * from './carts.ts';
 export * from './cartItems.ts'
 export * from './categories.ts';
+export * from './categoryImages.ts';
 export * from './addresses.ts';
 export * from './productSkus.ts';
 export * from './productImages.ts';
