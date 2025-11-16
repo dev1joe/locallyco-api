@@ -24,6 +24,8 @@ export async function getCategoryById(id: number, params?: Record<string, any>) 
     return await db?.query.categories.findFirst({ where: eq(categories.id, id), with: withOptions });
 }
 
+// TODO: test the and logic here
+// TODO: split this into two smaller functions, one for "with" options and one for "where" options
 function applyQueryParams(params: Record<string, any>) {
     const withOptions: Record<string, any> = {};
     let whereOptions: any;

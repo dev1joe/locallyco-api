@@ -1,5 +1,8 @@
+# environment variables
+.env*
+!.env.example
+
 # files
-.env
 notes_to_self.txt
 test.js
 test.ts
@@ -8,3 +11,6 @@ test.ts
 node_modules
 dist
 build
+
+# Local Netlify folder
+.netlify
