@@ -39,6 +39,7 @@ import { discounts } from './models/discounts.ts';
 import { categoryDiscounts } from './models/categoryDiscounts.ts';
 import { user } from './models/authSchema.ts';
 import { categoryImages } from './models/categoryImages.ts';
+import { sql } from 'drizzle-orm';
 
 // --- Define your seed data here ---
 // This data is structured to respect the foreign key dependencies of your schema.
@@ -108,7 +109,7 @@ const seedData: SeedData = {
 		{ name: 'Tech Innovations', description: 'Cutting-edge electronics.', userId: "user1" },
 		{ name: 'Urban Threads', description: 'Modern and sustainable apparel.', userId: "user2" },
 	] as InsertBrands[],
-		category: [
+	category: [
 		{ name: 'Electronics', description: 'Gadgets and electronic devices.' },
 		{ name: 'Apparel', description: 'Clothing and accessories.' },
 		{ name: 'Winter Collection', description: 'Stylish Winter' },
@@ -221,9 +222,9 @@ const seedData: SeedData = {
 		{ fname: 'John', lname: 'Smith', userId: "user3", addressId: 2 },
 		{ fname: 'Jane', lname: 'Smith', userId: "user4", addressId: 3 },
 	] as InsertCustomer[],
-		categoryDiscounts: [
-		{ categoryId: 2, discountId: 1},
-		{ categoryId: 3, discountId: 2},
+	categoryDiscounts: [
+		{ categoryId: 2, discountId: 1 },
+		{ categoryId: 3, discountId: 2 },
 	] as InsertCategoryDiscounts[],
 
 	// Level 4: Depends on Products, Payment, Customer, etc.
@@ -273,7 +274,7 @@ const seedData: SeedData = {
 	] as InsertProductSku[],
 	productDiscounts: [
 		{ discountId: 0, productId: 0 },
-		{ discountId: 3, productId: 4},
+		{ discountId: 3, productId: 4 },
 	] as InsertProductDiscount[],
 	review: [
 		// monitor reviews
@@ -342,45 +343,47 @@ async function seedDatabase() {
 
 	try {
 		// We use a transaction to ensure all operations succeed or none of them do.
-		await db.transaction(async (tx) => {
-			console.log('Deleting existing data...');
+		await db.execute(sql`BEGIN`);
+		
+		console.log('Deleting existing data...');
+		try {
 			// IMPORTANT: Delete in reverse order of foreign key dependencies
-			await tx.delete(productImages);
-			await tx.delete(returnItems);
-			await tx.delete(carts);
-			await tx.delete(orderItems);
-			await tx.delete(shipments);
-			await tx.delete(reviews);
-			await tx.delete(productSkus);
-			await tx.delete(products);
-			await tx.delete(orders);
-			await tx.delete(payments);
-			await tx.delete(customers);
-			await tx.delete(brands);
-			await tx.delete(user);
-			await tx.delete(promoCodes);
-			await tx.delete(categories);
-			await tx.delete(categoryImages);
-			await tx.delete(addresses);
-			await tx.delete(cartItems);
-			await tx.delete(productDiscounts);
+			await db.delete(productImages);
+			await db.delete(returnItems);
+			await db.delete(carts);
+			await db.delete(orderItems);
+			await db.delete(shipments);
+			await db.delete(reviews);
+			await db.delete(productSkus);
+			await db.delete(products);
+			await db.delete(orders);
+			await db.delete(payments);
+			await db.delete(customers);
+			await db.delete(brands);
+			await db.delete(user);
+			await db.delete(promoCodes);
+			await db.delete(categories);
+			await db.delete(categoryImages);
+			await db.delete(addresses);
+			await db.delete(cartItems);
+			await db.delete(productDiscounts);
 
 			console.log('Existing data deleted.');
 
 			console.log('Inserting new data...');
 			// IMPORTANT: Insert in the correct order to satisfy foreign key constraints.
 			// E.g., addresses must exist before customers can reference them.
-			const addressesResult = await tx.insert(addresses).values(seedData.addresses).returning({ id: addresses.id });
+			const addressesResult = await db.insert(addresses).values(seedData.addresses).returning({ id: addresses.id });
 
-			const categoryImagesResult = await tx.insert(categoryImages).values(seedData.categoryImages).returning({ id: categoryImages.id });
+			const categoryImagesResult = await db.insert(categoryImages).values(seedData.categoryImages).returning({ id: categoryImages.id });
 			// console.log("Category Images Result: ", categoryImagesResult);
-			
-			const seedCategories = seedData.category.map((c) => ((c.imageId)? {...c, imageId: categoryImagesResult[c.imageId].id} : c));
-			const categoriesResult = await tx.insert(categories).values(seedCategories).returning({ id: categories.id });
+
+			const seedCategories = seedData.category.map((c) => ((c.imageId) ? { ...c, imageId: categoryImagesResult[c.imageId].id } : c));
+			const categoriesResult = await db.insert(categories).values(seedCategories).returning({ id: categories.id });
 			// console.log("Categories Result", categoriesResult);
 
-			const seedChildCategories = seedData.childCategories.map((c) => { 
-				if (c.parentId != null) { 
+			const seedChildCategories = seedData.childCategories.map((c) => {
+				if (c.parentId != null) {
 					// console.log(`setting parent category ID of ${c.name} to ${categoriesResult[c.parentId].id}`);
 					c = { ...c, parentId: categoriesResult[c.parentId].id };
 				};
@@ -390,68 +393,73 @@ async function seedDatabase() {
 				};
 				return c;
 			});
-			const childCategoriesResult = await tx.insert(categories).values(seedChildCategories).returning({ id: categories.id });
+			const childCategoriesResult = await db.insert(categories).values(seedChildCategories).returning({ id: categories.id });
 
-			const discountsResult = await tx.insert(discounts).values(seedData.discounts).returning({ id: discounts.id });
+			const discountsResult = await db.insert(discounts).values(seedData.discounts).returning({ id: discounts.id });
 
-			const seedPromo = seedData.promoCodes.map(p => ({...p, discountId: discountsResult[p.discountId].id }));
-			const promosResult = await tx.insert(promoCodes).values(seedPromo).returning({ id: promoCodes.id });
+			const seedPromo = seedData.promoCodes.map(p => ({ ...p, discountId: discountsResult[p.discountId].id }));
+			const promosResult = await db.insert(promoCodes).values(seedPromo).returning({ id: promoCodes.id });
 
-			const usersResult = await tx.insert(user).values(seedData.users).returning();
+			const usersResult = await db.insert(user).values(seedData.users).returning();
 
 			const seededCustomers = seedData.customer.map(c => ({ ...c, addressId: addressesResult[0].id }));
-			const customersResult = await tx.insert(customers).values(seededCustomers).returning({ id: customers.id });
+			const customersResult = await db.insert(customers).values(seededCustomers).returning({ id: customers.id });
 
 			const seededBrands = seedData.brands.map(b => ({ ...b, categoryId: categoriesResult[0].id, addresses: addressesResult[0].id }));
-			const brandsResult = await tx.insert(brands).values(seededBrands).returning({ id: brands.id });
+			const brandsResult = await db.insert(brands).values(seededBrands).returning({ id: brands.id });
 
 			const seedCategoryDiscounts = seedData.categoryDiscounts.map(d => ({ ...d, categoryId: categoriesResult[d.categoryId].id, discountId: discountsResult[d.discountId].id }));
-			await tx.insert(categoryDiscounts).values(seedCategoryDiscounts);
+			await db.insert(categoryDiscounts).values(seedCategoryDiscounts);
 
 			const seededProducts = seedData.products.map(p => ({ ...p, categoryId: categoriesResult[p.categoryId].id, brandId: brandsResult[0].id }));
-			const productsResult = await tx.insert(products).values(seededProducts).returning({ id: products.id });
+			const productsResult = await db.insert(products).values(seededProducts).returning({ id: products.id });
 
 			const seededPayments = seedData.payments.map(p => ({ ...p, promoId: promosResult[0].id }));
-			const paymentsResult = await tx.insert(payments).values(seededPayments).returning({ id: payments.id });
+			const paymentsResult = await db.insert(payments).values(seededPayments).returning({ id: payments.id });
 
 			const seededOrders = seedData.order.map(o => ({ ...o, customerId: customersResult[0].id, addressId: addressesResult[0].id, paymentId: paymentsResult[0].id }));
-			const ordersResult = await tx.insert(orders).values(seededOrders).returning({ id: orders.id });
+			const ordersResult = await db.insert(orders).values(seededOrders).returning({ id: orders.id });
 
 			const seededCarts = seedData.carts.map(c => ({ ...c, customerId: customersResult[0].id }));
-			await tx.insert(carts).values(seededCarts).returning({ id: carts.id });
+			await db.insert(carts).values(seededCarts).returning({ id: carts.id });
 
 			// const seededCartsItem = seedData.cartItems.map((c, index) => (
 			// 	{ ...c, cartId: cartsResult[index].id }
 			// ));
-			// await tx.insert(cartItems).values(seededCartsItem);
+			// await db.insert(cartItems).values(seededCartsItem);
 
 			// Seeding SKUs
 			let seededProductSkus = seedData.productSkus.map(sku => ({ ...sku, productId: productsResult[sku.productId].id }));
 			// seededProductSkus[0].productId = productsResult[0].id;
-			const productSkusResult = await tx.insert(productSkus).values(seededProductSkus).returning({ id: productSkus.id });
+			const productSkusResult = await db.insert(productSkus).values(seededProductSkus).returning({ id: productSkus.id });
 
 			// seeding ProductDiscounts
 			let seededProductDiscounts = seedData.productDiscounts.map(dis => ({ ...dis, productId: productsResult[dis.productId].id, discountId: discountsResult[dis.discountId].id }));
-			await tx.insert(productDiscounts).values(seededProductDiscounts);
+			await db.insert(productDiscounts).values(seededProductDiscounts);
 
 			// Seeding Reviews
 			const seededReviews = seedData.review.map(r => ({ ...r, productId: productsResult[r.productId].id, customerId: customersResult[r.customerId].id }));
-			await tx.insert(reviews).values(seededReviews);
+			await db.insert(reviews).values(seededReviews);
 
 			const seededOrderItems = seedData.orderItem.map(oi => ({ ...oi, orderId: ordersResult[0].id, productId: productsResult[0].id }));
-			const orderItemsResult = await tx.insert(orderItems).values(seededOrderItems).returning({ id: orderItems.id });
+			const orderItemsResult = await db.insert(orderItems).values(seededOrderItems).returning({ id: orderItems.id });
 
 			const seededShipments = seedData.shipment.map(s => ({ ...s, orderId: ordersResult[0].id }));
-			await tx.insert(shipments).values(seededShipments);
+			await db.insert(shipments).values(seededShipments);
 
 			const seededProductImages = seedData.productImages.map(pi => ({ ...pi, productSkuId: productSkusResult[0].id }));
-			await tx.insert(productImages).values(seededProductImages);
+			await db.insert(productImages).values(seededProductImages);
 
 			const seededReturnItems = seedData.returnItems.map(ri => ({ ...ri, orderItemId: orderItemsResult[0].id }));
-			await tx.insert(returnItems).values(seededReturnItems);
-
+			await db.insert(returnItems).values(seededReturnItems);
+			
+			await db.execute(sql`COMMIT`);
 			console.log('Database seeding complete!');
-		});
+		} catch (error) {
+			await db.execute(sql`ROLLBACK`);
+			console.error('Error during seeding, transaction rolled back:', error);
+			throw error;
+		}
 	} catch (error) {
 		console.error('Database seeding failed:', error);
 		process.exit(1);
