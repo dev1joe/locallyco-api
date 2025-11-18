@@ -1,7 +1,6 @@
 import dotenv from "dotenv"
 import { z } from "zod"
 import path from "path"
-import { fileURLToPath } from "url"
 
 dotenv.config({
 	debug: true,
@@ -26,7 +25,7 @@ const result = configSchema.safeParse({
 });
 
 if (!result.success) {
-	console.error("❌ Invalid env:");
+	console.error("Invalid env:");
 	console.error(JSON.stringify(result.error.flatten().fieldErrors, null, 2));
 	process.exit(1);
 }

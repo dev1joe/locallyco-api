@@ -1,8 +1,9 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import db from "../db/db.ts";
-import { openAPI, admin } from "better-auth/plugins";
+import { openAPI, admin as adminPlugIn } from "better-auth/plugins";
 import { config } from "../../config/config.ts";
+import { ac, admin, brand, customer } from "./permissions.ts"
 
 export const auth = betterAuth({
 	database: drizzleAdapter(db, {
@@ -12,12 +13,19 @@ export const auth = betterAuth({
 
 	plugins: [
 		// openAPI(),
-		admin(),
+		adminPlugIn({
+			ac,
+			roles: {
+				admin,
+				brand,
+				customer,
+			},
+		}),
 	],
 
-	// trustedOrigins: [
-	// 	config.frontEndURL,
-	// ],
+	trustedOrigins: [
+		config.frontEndURL as string,
+	],
 
 	emailAndPassword: {
 		enabled: true,

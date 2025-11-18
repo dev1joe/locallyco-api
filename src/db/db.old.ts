@@ -6,8 +6,8 @@ import { Pool } from "pg"
 
 const schema_relations = { ...schema, ...relations }
 
-function connectToDatabase(credentials: Object): NodePgDatabase<typeof schema_relations> {
-	const pool = new Pool(credentials);
+function connectToDatabase(credentials: { url: string }): NodePgDatabase<typeof schema_relations> {
+	const pool = new Pool({ connectionString: credentials.url });
 	return drizzle(pool, {
 		schema: schema_relations,
 		casing: "snake_case",
